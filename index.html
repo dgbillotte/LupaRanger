@@ -10,7 +10,6 @@
 <body>
 
 <div id="boombox">
-	<div class="boombox-handle"></div>
 
 	<div class="boombox-body">
 
@@ -22,264 +21,33 @@
 			</datalist>
 			<label for="volume">VOL</label>
 
-			<input type="range" id="panner" class="control-panner" list="pan-vals" min="-1" max="1" value="0" step="0.01" data-action="panner" />
-			<datalist id="pan-vals">
-				<option value="-1" label="left">
-				<option value="1" label="right">
-			</datalist>
-			<label for="panner">PAN</label>
+		</section>
 
-			<button class="control-power" role="switch" aria-checked="false" data-power="on">
-				<span>On/Off</span>
+
+		<section class="files">
+			<button class="file-load">
+				<span>Load</span>
 			</button>
 		</section>
 
-		<section class="tape">
-
-			<button data-playing="false" class="tape-controls-play" role="switch" aria-checked="false">
+		<section class="transport">
+			<button data-playing="false" class="transport-play" role="switch" aria-checked="false">
 				<span>Play/Pause</span>
 			</button>
 		</section>
 
+
         <section class="display">
             <canvas id="waveform_canvas" width="1024" height="256"></canvas>
         </section>
-        <section class="display">
-            <canvas id="waveform_canvas2" width="1024" height="256"></canvas>
-        </section>
+
 
 	</div><!-- boombox-body -->
 </div>
 
 
 
-
-
-<script type="text/javascript">
-// Hacks to deal with different function names in different browsers
-window.requestAnimFrame = (function(){
-    return  window.requestAnimationFrame       ||
-            window.webkitRequestAnimationFrame ||
-            window.mozRequestAnimationFrame    ||
-            function(callback, element){
-            window.setTimeout(callback, 1000 / 60);
-            };
-})();
-
-// instigate our audio context
-
-// for cross browser
-const AudioContext = window.AudioContext || window.webkitAudioContext;
-let audioCtx;
-
-// load some sound
-const audioElement = document.querySelector('audio');
-// let track;
-// let rawAudioData;
-let buffer;
-let source;
-let analyzer;
-let dataArray1;
-let dataArray2;
-let bufferLength;
-let canvasCtx;
-
-const WIDTH = 1024;
-const HEIGHT = 256;
-
-const playButton = document.querySelector('.tape-controls-play');
-
-// play pause audio
-playButton.addEventListener('click', function() {
-    if(!audioCtx) {
-        init();
-	}
-    
-	// check if context is in suspended state (autoplay policy)
-	if (audioCtx.state === 'suspended') {
-        audioCtx.resume();
-	}
-    
-	if (this.dataset.playing === 'false') {
-        play();
-        this.dataset.playing = 'true';
-        // if track is playing pause it
-	} else if (this.dataset.playing === 'true') {
-        source.stop();
-		this.dataset.playing = 'false';
-	}
-    
-	let state = this.getAttribute('aria-checked') === "true" ? true : false;
-	this.setAttribute( 'aria-checked', state ? "false" : "true" );
-    
-}, false);
-
-function play() {
-    
-    
-    source = audioCtx.createBufferSource();
-    source.buffer = buffer;
-    source.connect(analyzer).connect(audioCtx.destination);
-    // source.connect(audioCtx.destination);
-    source.loop = true;
-    source.start();
-    
-    drawWFToCanvas();
-}
-
-function drawWaveform() {
-    analyzer = audioCtx.createAnalyser();
-    analyzer.fftSize = 2048;
-    bufferLength = analyzer.frequencyBinCount;
-    dataArray = new Uint8Array(bufferLength);
-    
-    // get the canvasCtx here
-    var canvas = document.getElementById("waveform_canvas2");
-    canvasCtx = canvas.getContext("2d");
-    
-    canvasCtx.clearRect(0, 0, WIDTH, HEIGHT);
-    
-    draw();
-    
-}
-
-
-function drawBlip(x) {
-    var canvas = document.getElementById("waveform_canvas");
-    var canvasCtx = canvas.getContext("2d");
-
-}
-
-function drawWFToCanvas() {
-    
-    var bufferLength = source.buffer.length;
-
-    var waveData = new Float32Array(bufferLength);
-    source.buffer.copyFromChannel(waveData, 0);
-    
-    var canvas = document.getElementById("waveform_canvas");
-    var canvasCtx = canvas.getContext("2d");
-    
-    canvasCtx.clearRect(0, 0, WIDTH, HEIGHT);
-
-    canvasCtx.fillStyle = 'rgb(64, 64, 64)';
-    canvasCtx.fillRect(0, 0, WIDTH, HEIGHT);
-    
-    canvasCtx.lineWidth = 2;
-    canvasCtx.strokeStyle = 'rgb(0,255,0)';
-    canvasCtx.beginPath();
-    
-    var sliceWidth = WIDTH * 1.0 / bufferLength;
-    var x = 0;
-    
-    var center = HEIGHT / 2;
-    for(var i = 0; i < bufferLength; i++) {
-        var y = center + (waveData[i] * center);
-        
-        if(i === 0) {
-            canvasCtx.moveTo(x, y);
-        } else {
-            canvasCtx.lineTo(x, y);
-        }
-        
-        x += sliceWidth;
-        
-    }
-    
-    canvasCtx.lineTo(WIDTH, HEIGHT/2);
-    canvasCtx.stroke();
-}
-
-
-function draw() {
-    var drawVisual = requestAnimationFrame(draw);
-    analyzer.getByteTimeDomainData(dataArray);
-    
-    canvasCtx.fillStyle = 'rgb(64, 64, 64)';
-    canvasCtx.fillRect(0, 0, WIDTH, HEIGHT);
-    
-    canvasCtx.lineWidth = 2;
-    canvasCtx.strokeStyle = 'rgb(0,255,0)';
-    canvasCtx.beginPath();
-    
-    var sliceWidth = WIDTH * 1.0 / bufferLength;
-    var x = 0;
-    
-    for(var i = 0; i < bufferLength; i++) {
-        var v = dataArray[i] / 128.0;
-        var y = v * HEIGHT / 2;
-        
-        if(i === 0) {
-            canvasCtx.moveTo(x, y);
-        } else {
-            canvasCtx.lineTo(x, y);
-        }
-        
-        x += sliceWidth;
-        
-    }
-    
-    canvasCtx.lineTo(WIDTH, HEIGHT/2);
-    canvasCtx.stroke();
-}
-
-  
-
-function init0() {
-    audioCtx = new AudioContext();
-
-    var audioSrc = '/dope-drum-loop_C_major.wav'
-    
-    fetch(audioSrc, onSuccess)
-    
-    function fetch (url, resolve) {
-        var request = new XMLHttpRequest();
-        request.open('GET', url, true);
-        request.responseType = 'arraybuffer';
-        request.onload = function () { resolve(request) }
-        request.send()
-    }
-    
-    function onSuccess (request) {
-        var audioData = request.response;
-        audioCtx.decodeAudioData(audioData, onBuffer, onDecodeBufferError)
-    }
-    
-    function onBuffer (newBuffer){
-        buffer = newBuffer;
-        console.info('Got the buffer', buffer);
-    }
-    
-    function onDecodeBufferError (e) {
-        console.log('Error decoding buffer: ' + e.message);
-        console.log(e);
-    }    
-
-    drawWaveform();
-}
-
-
-function init() {
-    init0();
-    
-    console.log('playing for the first time')
-    // volume
-	const gainNode = audioCtx.createGain();
-    
-	const volumeControl = document.querySelector('[data-action="volume"]');
-	volumeControl.addEventListener('input', function() {
-        gainNode.gain.value = this.value;
-        console.log("adjusting the volume: " + this.value);
-	}, false);
-    
-    source.connect(gainNode).connect(audioCtx.destination);
-}
-
-document.addEventListener('DOMContentLoaded', function () {
-}, false);
-
-
-</script>
+<script type="text/javascript" src="looper.js"></script>
 
 </body>
 </html>
