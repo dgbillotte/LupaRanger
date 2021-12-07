@@ -1,3 +1,16 @@
+/*
+Primary Todos:
+- clean up to some simple Vanilla standard
+
+Features:
+- make play restart when loop-window changes
+- make loop-window drag-resizeable
+- Add an effect or two
+- Stretch: Enable reverse play 
+
+*/
+
+
 // Hacks to deal with different function names in different browsers
 window.requestAnimFrame = (function(){
     return  window.requestAnimationFrame       ||
@@ -15,10 +28,9 @@ const AudioContext = window.AudioContext || window.webkitAudioContext;
 let audioCtx;
 let canvasCtx;
 let gainNode;
-let buffer;
-let buffer_loaded = false;
-let source;
-let bufferLength;
+let primaryBuffer;
+let loopBuffer;
+let looper;
 let initialized = false;
 
 const WIDTH = 1024;
@@ -51,20 +63,55 @@ playButton.addEventListener('click', function() {
         this.dataset.playing = 'true';
         
 	} else if (this.dataset.playing === 'true') {
-        source.stop();
+        looper.stop();
 		this.dataset.playing = 'false';
 	}
     
 	let state = this.getAttribute('aria-checked') === "true" ? true : false;
-	this.setAttribute( 'aria-checked', state ? "false" : "true" );
+	this.setAttribute('aria-checked', state ? "false" : "true" );
     
 }, false);
 
 
-function init() {
-    var canvas = document.getElementById("waveform_canvas");
-    canvasCtx = canvas.getContext("2d");
 
+const waveformCanvas = document.getElementById("waveform_canvas");
+let selectStartX = 0;
+let selectEndX = 0;
+
+let mouseMoveHandler = function(event) {
+    selectEndX = event.x <= WIDTH ? event.x : WIDTH;
+    
+    drawWaveform();
+    canvasCtx.lineWidth = 2;
+    canvasCtx.strokeStyle = 'rgb(255,255,0)';
+    canvasCtx.fillStyle = 'rgba(255, 0, 0, 0.25)';
+    canvasCtx.fillRect(selectStartX, 0, selectEndX - selectStartX, HEIGHT);
+    canvasCtx.strokeRect(selectStartX, 0, selectEndX - selectStartX, HEIGHT);
+};
+
+waveformCanvas.addEventListener('mousedown', function(event) {
+    mouseDown = true;
+    selectStartX = event.x
+    waveformCanvas.addEventListener('mousemove', mouseMoveHandler);    
+});
+
+waveformCanvas.addEventListener('mouseup', function() {
+    waveformCanvas.removeEventListener('mousemove', mouseMoveHandler);
+    mouseDown = false;
+
+    clipTheLoop();
+});
+
+function clipTheLoop() {
+    // calculate start/stop samples
+    let startSample = selectStartX * 1.0 * primaryBuffer.length / WIDTH;
+    let stopSample = selectEndX * 1.0 * primaryBuffer.length / WIDTH;
+    loopBuffer = createLoopBuffer(primaryBuffer, startSample, stopSample-startSample);
+}
+
+function init() {
+    canvasCtx = waveformCanvas.getContext("2d");
+    
     audioCtx = new AudioContext();
     var audioSrc = '/dope-drum-loop_C_major.wav'
     fetchFile(audioSrc, onFileFetched)
@@ -75,27 +122,25 @@ function init() {
     volumeControl.addEventListener('input', function() {
         gainNode.gain.value = this.value;
     }, false);
-
+    
     initialized = true;
 }
 
 
 function play() {
-    source = audioCtx.createBufferSource();
-    source.buffer = buffer;
-    source.connect(gainNode).connect(audioCtx.destination);
-    source.loop = true;
-    source.start();
+    looper = audioCtx.createBufferSource();
+    looper.buffer = loopBuffer;
+    looper.connect(gainNode).connect(audioCtx.destination);
+    looper.loop = true;
+    looper.start();
 }
 
 
 
-function drawWFToCanvas(buffer) {
+function drawWaveform() {
     
-    var bufferLength = buffer.length;
-    
-    var waveData = new Float32Array(bufferLength);
-    buffer.copyFromChannel(waveData, 0);
+    var waveData = new Float32Array(primaryBuffer.length);
+    primaryBuffer.copyFromChannel(waveData, 0);
     
     canvasCtx.clearRect(0, 0, WIDTH, HEIGHT);
     
@@ -106,11 +151,11 @@ function drawWFToCanvas(buffer) {
     canvasCtx.strokeStyle = 'rgb(0,255,0)';
     canvasCtx.beginPath();
     
-    var sliceWidth = WIDTH * 1.0 / bufferLength;
+    var sliceWidth = WIDTH * 1.0 / primaryBuffer.length;
     var x = 0;
     
     var center = HEIGHT / 2;
-    for(var i = 0; i < bufferLength; i++) {
+    for(var i = 0; i < primaryBuffer.length; i++) {
         var y = center + (waveData[i] * center);
         
         if(i === 0) {
@@ -139,24 +184,43 @@ function fetchFile (url, resolve) {
 
 function onFileFetched (request) {
     function onFileDecode (newBuffer){
-        buffer = newBuffer;
-        console.info('Got the buffer', buffer);
-        buffer_loaded = true;
-        drawWFToCanvas(buffer);
-        // nothing can start until this is done
+        primaryBuffer = newBuffer;
+        drawWaveform(primaryBuffer);
+        loopBuffer = createLoopBuffer(primaryBuffer);
     }
     
     function onFileDecodeError (e) {
         console.log('Error decoding buffer: ' + e.message);
         console.log(e);
     }    
-
+    
     var audioData = request.response;
     audioCtx.decodeAudioData(audioData, onFileDecode, onFileDecodeError)
 }
 
 
+function createLoopBuffer(audioBuffer, start=0, length=0) {
+    if(length === 0) {
+        length = audioBuffer.length - start;
+    }
+    if(start + length > audioBuffer.length) {
+        console.log("shouldn't be getting here, can you hear it?");
+    }
 
-// document.addEventListener('DOMContentLoaded', function () {
-// }, false);
+    let share = new AudioBuffer({
+        length: length,
+        numberOfChannels: audioBuffer.numberOfChannels,
+        sampleRate: audioBuffer.sampleRate,
+        channelCount: audioBuffer.channelCount
+    });
+    
+    for(let i=0; i < audioBuffer.numberOfChannels; i++) {
+        let f32Buf = audioBuffer.getChannelData(i);
+        let newf32Buf = new Float32Array(f32Buf, start, length);
+        share.copyToChannel(newf32Buf, i);
+    }
+
+    return share;
+}
+
 
