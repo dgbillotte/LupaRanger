@@ -1,5 +1,6 @@
 pages:
-  script:
+  script: "foobar"
+  
   artifacts:
     paths:
       - public
