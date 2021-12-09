@@ -45,10 +45,10 @@ function init() {
     _canvasCtx = waveformCanvas.getContext("2d");
     
     _audioCtx = new AudioContext();
-    // var audioSrc = '/dope-drum-loop_C_major.wav'
-    // var audioSrc = '/talking.wav'
-    // var audioSrc = '/sharks1.wav'
-    var audioSrc = '/dungeons.wav'
+    // var audioSrc = 'dope-drum-loop_C_major.wav'
+    // var audioSrc = 'talking.wav'
+    // var audioSrc = 'sharks1.wav'
+    var audioSrc = 'dungeons.wav'
     // var audioSrc = 'bari1.wav'
     fetchFile(audioSrc, onFileFetched)
     
