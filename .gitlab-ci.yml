@@ -1,5 +1,5 @@
 pages:
-  script: "foobar"
+  script: "echo 'deploying audio engine'"
   
   artifacts:
     paths:
