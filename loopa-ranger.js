@@ -11,61 +11,41 @@ Features:
 
 
 */
-import {drawDisplay, drawOscopeFrame, initDraw } from "./draw.js";
+import {drawDisplay, initDraw } from "./loopa-draw.js";
 import {Looper} from "./looper.js"
+import {Ranger, Track} from "./ranger.js"
 
 // Audio / looper variables
 let _audioCtx;
-// let _primaryBuffer;
-let _loopBuffer;
-let _looper;
+let _superLooper;
 let _gainNode;
-let _gainNode2;
-let _gainNode3;
-let _analyzerNode;
-let _analyzerBuffer;
+let _ranger;
 let _initialized = false;
-let _osc;
 // UI / selection window variables
 
-let _superLooper;
 
 function init() {
     _audioCtx = new AudioContext();
     // const audioSrc = 'audio/dope-drum-loop_C_major.wav'
     // const audioSrc = 'audio/talking.wav'
     // const audioSrc = 'audio/sharks1.wav'
-    const audioSrc = 'audio/dungeons.wav'
+    // const audioSrc = 'audio/dungeons.wav'
+    const audioSrc = 'audio/chirp-2secs.wav'
     // const audioSrc = 'audio/bari1.wav'
 
     // Gain node. Chain up any other filters/effects here
     _gainNode = _audioCtx.createGain();
-    // _gainNode2 = _audioCtx.createGain();
-    // _gainNode3 = _audioCtx.createGain();
-    _analyzerNode = _audioCtx.createAnalyser();
-
-    _osc = _audioCtx.createOscillator();
-    _osc.type = "square";
-
-    _osc.connect(_audioCtx.destination);
 
     // create the looper
-    _superLooper = new Looper(_audioCtx, [_analyzerNode, _gainNode, _osc, _gainNode2, _gainNode3]);
-    _superLooper = new Looper(_audioCtx, [_analyzerNode, _gainNode]);
+    _superLooper = new Looper(_audioCtx, [_gainNode]);
 
     // load the first file and get everything going
     fetchLooperFile(audioSrc, function(audioBuffer) {
+        // _abt1 = _abt2 = audioBuffer;
         _superLooper.loadPrimaryBuffer(audioBuffer);
         initDraw(_superLooper);
         drawDisplay();
-        animateOscope();
     });
-
-    // setup the data buffer for the analyzer
-    _analyzerNode.fftSize = 2048*16;
-    // _analyzerBuffer = new Uint8Array(_analyzerNode.frequencyBinCount);
-    _analyzerBuffer = new Float32Array(_analyzerNode.frequencyBinCount);
-
 
     // connect the volume slider to the gainNode
     const volumeControl = document.querySelector('[data-action="volume"]');
@@ -78,21 +58,13 @@ function init() {
         _superLooper.playbackRate(this.value);
     }, false);
 
-    // const volumeControl3 = document.querySelector('[data-action="volume3"]');
-    // volumeControl3.addEventListener('input', function() {
-    //     _gainNode3.gain.value = this.value;
-    // }, false);
-    
-    _initialized = true;
-}
 
-function animateOscope() {
-    if(playButton.dataset.playing === 'true') {
-        requestAnimationFrame(animateOscope);
-    }
-    // _analyzerNode.getByteTimeDomainData(_analyzerBuffer);
-    _analyzerNode.getFloatTimeDomainData(_analyzerBuffer);
-    drawOscopeFrame(_analyzerBuffer);
+    // setup the arranger
+    _ranger = new Ranger(_audioCtx);
+
+
+
+    _initialized = true;
 }
 
 //------------------ Register Event Handlers -----------------------
@@ -106,25 +78,9 @@ loadButton.addEventListener('click', function() {
 });
 
 
-const sb1Button = document.querySelector('.sb-1');
-sb1Button.addEventListener('click', function() {
-    if(! _initialized) {
-        return;
-    }
-
-    if(this.dataset.playing === "false") {
-        this.dataset.playing = "true";
-        _osc.start();
-    } else {
-        this.dataset.playing = "false";
-        _osc.stop();
-    }
-});
-
-
-// Button to toggle Play/Pause
-const playButton = document.querySelector('.transport-play');
-playButton.addEventListener('click', function() {
+// Button to toggle Looper Play/Pause
+const looperPlayButton = document.querySelector('.looper .transport-play');
+looperPlayButton.addEventListener('click', function() {
     if(! _initialized) {
         return; 
 	}
@@ -137,11 +93,51 @@ playButton.addEventListener('click', function() {
 	if (this.dataset.playing === 'false') {
         this.dataset.playing = 'true';
         _superLooper.play();
-        animateOscope();
         
 	} else if (this.dataset.playing === 'true') {
 		this.dataset.playing = 'false';
         _superLooper.stop();
+	}
+});
+
+// Button to add current loop as a track in ranger
+let trackCount = 0;
+const addTrackButton = document.querySelector('.add-track');
+addTrackButton.addEventListener('click', function() {
+    const loop = _superLooper.cloneLoop();
+    const track = new Track(loop);
+    if(trackCount == 0) {
+        track.addClip(0,0.75);
+        track.addClip(2, 2.25);
+        track.addClip(2.5, 2.75);
+    } else {
+        track.addClip(1,1.75);
+        track.addClip(3,3.25);
+        track.addClip(3.5,3.75);
+    }
+    trackCount++;
+    _ranger.addTrack(track);
+});
+
+// Button to toggle Ranger Play/Pause
+const rangerPlayButton = document.querySelector('.ranger .transport-play');
+rangerPlayButton.addEventListener('click', function() {
+    if(! _initialized) {
+        return; 
+	}
+    
+	// check if context is in suspended state (autoplay policy)
+	if (_audioCtx.state === 'suspended') {
+        _audioCtx.resume();
+	}
+    
+	if (this.dataset.playing === 'false') {
+        this.dataset.playing = 'true';
+        _ranger.play();
+        
+	} else if (this.dataset.playing === 'true') {
+		this.dataset.playing = 'false';
+        _ranger.stop();
 	}
 });
 

@@ -3,37 +3,43 @@
 export class Looper {
     #audioContext;
     #primaryBuffer;
-    #loopBuffer;
+    #loopStart = 0;
+    #loopEnd;
     #looper;
     #downstreamChain;
-
-    constructor(audioContext, downstreamChain=null) {
+    #playbackRate= 1.0;
+    
+    constructor(audioContext, downstreamChain=[]) {
         this.#audioContext = audioContext;
         this.#downstreamChain = downstreamChain;
+        this.#downstreamChain.push(this.#audioContext.destination);
     }
 
     play() {
-        let looper = this.#audioContext.createBufferSource();
-        looper.buffer = this.#loopBuffer;
-        if(this.#downstreamChain) {
-            console.log("using passed in downstream chain")
+        this.#looper = new AudioBufferSourceNode(this.#audioContext, {
+            buffer: this.#primaryBuffer,
+            loop: true,
+            loopStart:  this.#loopStart,
+            loopEnd: this.#loopEnd,
+            playbackRate: this.#playbackRate
+        });
 
-            // looper.connect(this.#downstreamChain[1]).connect(this.#audioContext.destination);
-            looper.connect(this.#downstreamChain[0]).connect(this.#downstreamChain[1]).connect(this.#audioContext.destination);
+        let chain = this.#looper;
+        for(let i=0; i < this.#downstreamChain.length; i++) {
+            chain = chain.connect(this.#downstreamChain[i]);
+        } 
+                
+        this.#looper.start();
+    }
 
-            // let head = looper;
-            // for(const node in this.#downstreamChain) {
-            //     head = head.connect(node);
-            // } 
-            // head.connect(this.#audioContext.destination);
-            // looper.connect(this.#downstreamChain).connect(this.#audioContext.destination);
-        } else {
-            console.log("connecting directly to the output")
-            looper.connect(this.#audioContext.destination);
-        }
-        looper.loop = true;
-        looper.start();
-        this.#looper = looper;
+    cloneLoop() {
+        return {
+            buffer: this.#primaryBuffer,
+            loop: true,
+            loopStart:  this.#loopStart,
+            loopEnd: this.#loopEnd,
+            playbackRate: this.#playbackRate            
+        };
     }
     
     stop() {
@@ -49,16 +55,23 @@ export class Looper {
     }
     
     reClip(start, end, width) {
-        let startSample = Math.floor(start * 1.0 * this.#primaryBuffer.length / width);
-        let stopSample = Math.floor(end * 1.0 * this.#primaryBuffer.length / width);
-        // console.log("reClip: ", start, end, width, startSample, stopSample);
-        this.#loopBuffer = this.createLoopBuffer(startSample, stopSample-startSample);
-        this.reset();
+        this.#loopStart = (start * 1.0 * this.#primaryBuffer.length / width) / 44100.0;
+        this.#loopEnd = (end * 1.0 * this.#primaryBuffer.length / width) / 44100.0;
+        if(this.#looper) {
+            this.#looper.loopStart = this.#loopStart;
+            this.#looper.loopEnd = this.#loopEnd;
+        }
     }
     
     loadPrimaryBuffer(audioBuffer) {
-        this.#primaryBuffer = audioBuffer; //this.#audioContext.decodeAudioData(arrayBuffer);
-        this.#loopBuffer = this.createLoopBuffer();
+        this.#primaryBuffer = audioBuffer;
+        this.#loopStart = 0;
+        this.#loopEnd = audioBuffer.length - 1;
+    }
+
+    playbackRate(playbackRate=1.0) {
+        this.#playbackRate = playbackRate;
+        this.#looper.playbackRate.value = playbackRate;
     }
 
     get primaryBufferData() {
@@ -67,11 +80,16 @@ export class Looper {
         return audioData;
     }
 
-    get loopBufferData() {
-        let audioData = new Float32Array(this.#loopBuffer.length);
-        this.#loopBuffer.copyFromChannel(audioData, 0);
-        return audioData;
+    get primaryBufferData2() {
+        return this.#primaryBuffer.getChannelData(0);
     }
+    
+
+    // get loopBufferData() {
+    //     let audioData = new Float32Array(this.#loopBuffer.length);
+    //     this.#loopBuffer.copyFromChannel(audioData, 0);
+    //     return audioData;
+    // }
 
     /*
      * Create a new AudioBuffer for the looper.
@@ -79,27 +97,27 @@ export class Looper {
      * changes, it does not reload or copy the actual audio data,
      * but instead gets a new limited "view" into the primary buffer
      */
-    createLoopBuffer(start=0, length=0) {
-        if(length === 0) {
-            length = this.#primaryBuffer.length - start;
-        }
+    // createLoopBuffer(start=0, length=0) {
+    //     if(length === 0) {
+    //         length = this.#primaryBuffer.length - start;
+    //     }
     
-        let share = new AudioBuffer({
-            length: length,
-            numberOfChannels: this.#primaryBuffer.numberOfChannels,
-            sampleRate: this.#primaryBuffer.sampleRate,
-            channelCount: this.#primaryBuffer.channelCount
-        });
+    //     let share = new AudioBuffer({
+    //         length: length,
+    //         numberOfChannels: this.#primaryBuffer.numberOfChannels,
+    //         sampleRate: this.#primaryBuffer.sampleRate,
+    //         channelCount: this.#primaryBuffer.channelCount
+    //     });
         
-        for(let i=0; i < this.#primaryBuffer.numberOfChannels; i++) {
-            let f32Buf = this.#primaryBuffer.getChannelData(i);
-            let newf32Buf = new Float32Array(f32Buf.buffer, start*4, length);
-            // console.log("createLoopBuffer: ", start, length);
-            share.copyToChannel(newf32Buf, i);
-        }
+    //     for(let i=0; i < this.#primaryBuffer.numberOfChannels; i++) {
+    //         let f32Buf = this.#primaryBuffer.getChannelData(i);
+    //         let newf32Buf = new Float32Array(f32Buf.buffer, start*4, length);
+    //         // console.log("createLoopBuffer: ", start, length);
+    //         share.copyToChannel(newf32Buf, i);
+    //     }
     
-        return share;
-    }
+    //     return share;
+    // }
 }
 
 

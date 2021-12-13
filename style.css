@@ -1,0 +1,8 @@
+.tracklist {
+    background-color: black;
+    padding: 10px;
+}
+
+canvas.track {
+    background-color: blue;
+}

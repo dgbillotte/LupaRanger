@@ -10,9 +10,9 @@
 </head>
 <body>
 
-<div id="boombox">
+<div id="loopa-ranger">
 
-	<div class="boombox-body">
+	<div class="looper">
 
 		<section class="master-controls">
 			<input type="range" id="volume" class="control-volume" min="0" max="2" value="0.5" list="gain-vals" step="0.01" data-action="volume" />
@@ -20,11 +20,7 @@
 
 			<input type="range" id="playback-speed" class="control-volume" min="0" max="5" value="1.0" step="0.01" data-action="playback-speed" />
 			<label for="playback-speed">Playback Speed</label>
-
-			<!-- <input type="range" id="volume3" class="control-volume" min="0" max="2" value="0.5" list="gain-vals" step="0.01" data-action="volume3" />
-			<label for="volume3">VOL-MASTER</label> -->
 		</section>
-
 
 		<section class="files">
 			<button class="file-load">
@@ -36,28 +32,33 @@
 			<button data-playing="false" class="transport-play" role="switch" aria-checked="false">
 				<span>Play/Pause</span>
 			</button>
-		</section>
-		
+		</section>		
 		
         <section class="display">
 			<canvas id="waveform_canvas" width="1024" height="256"></canvas>
-            <canvas id="oscope_canvas" width="1024" height="256"></canvas>
+			<button class="add-track">
+				<span>Add Track</span>
+			</button>
         </section>
 		
-		<section class="soundboard">
-			<button data-playing="false" class="sb-1">
-				<span>#1</span>
-			</button>
-
+	</div>
+	
+	<div class="ranger">
+		<section class="tracklist">
+			<canvas class="track" id="track0" width="1024" height="64"></canvas>
+			<canvas class="track" id="track1" width="1024" height="64"></canvas>
 		</section>
-
-
-	</div><!-- boombox-body -->
+		<section class="transport">
+			<button data-playing="false" class="transport-play" role="switch" aria-checked="false">
+				<span>Play/Pause</span>
+			</button>
+		</section>
+	</div>
 </div>
 
 
 
-<script type="module" src="main.js"></script>
+<script type="module" src="loopa-ranger.js"></script>
 
 </body>
 </html>

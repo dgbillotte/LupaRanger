@@ -87,7 +87,7 @@ function drawSelectionWindow() {
 export function drawDisplay() {
     drawPrimaryWaveform();
     if(_clipSelection) {
-        drawClippedWaveform();
+        // drawClippedWaveform();
         drawSelectionWindow();
     }
 }
@@ -185,7 +185,7 @@ let slideSelectionMouseMove = function(event) {
     _clipSelection['start'] += delta;
     _clipSelection['end'] += delta;
     drawDisplay();
-    // _loopClipper.reClip(_clipSelection.start, _clipSelection.end, WIDTH);
+    _looper.reClip(_clipSelection.start, _clipSelection.end, WIDTH);
 }
 
 
