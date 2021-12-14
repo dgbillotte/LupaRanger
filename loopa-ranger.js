@@ -41,7 +41,6 @@ function init() {
 
     // load the first file and get everything going
     fetchLooperFile(audioSrc, function(audioBuffer) {
-        // _abt1 = _abt2 = audioBuffer;
         _superLooper.loadPrimaryBuffer(audioBuffer);
         initDraw(_superLooper);
         drawDisplay();
@@ -58,9 +57,9 @@ function init() {
         _superLooper.playbackRate(this.value);
     }, false);
 
-
     // setup the arranger
-    _ranger = new Ranger(_audioCtx);
+    const rangerElement = document.querySelector('#ranger');
+    _ranger = new Ranger(_audioCtx, rangerElement);
 
 
 
@@ -106,21 +105,11 @@ const addTrackButton = document.querySelector('.add-track');
 addTrackButton.addEventListener('click', function() {
     const loop = _superLooper.cloneLoop();
     const track = new Track(loop);
-    if(trackCount == 0) {
-        track.addClip(0,0.75);
-        track.addClip(2, 2.25);
-        track.addClip(2.5, 2.75);
-    } else {
-        track.addClip(1,1.75);
-        track.addClip(3,3.25);
-        track.addClip(3.5,3.75);
-    }
-    trackCount++;
     _ranger.addTrack(track);
 });
 
 // Button to toggle Ranger Play/Pause
-const rangerPlayButton = document.querySelector('.ranger .transport-play');
+const rangerPlayButton = document.querySelector('#ranger .transport-play');
 rangerPlayButton.addEventListener('click', function() {
     if(! _initialized) {
         return; 

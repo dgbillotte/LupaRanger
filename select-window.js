@@ -31,6 +31,18 @@ export class SelectWindow {
         this.#width = width;
     }
 
+    startScaled(scaleMax=0) {
+        return (scaleMax == 0)
+            ? this.#clipSelection.start
+            : scaleMax * 1.0 * this.#clipSelection.start / this.#width;
+    }
+
+    endScaled(scaleMax=0) {
+        return (scaleMax == 0)
+            ? this.#clipSelection.end
+            : scaleMax * 1.0 * this.#clipSelection.end / this.#width;
+    }
+
     placeLeftHandle(top, left, height, width) {
         this.#lhTop = top;
         this.#lhLeft = left;
@@ -68,6 +80,7 @@ export class SelectWindow {
     }
 
     mouseDownHandler(event) {
+        console.log("select-window mousedown");
         let handler;
         if(this.#clipSelection.start !== this.#clipSelection.end) {
             if(this.inLeftHandle(event.offsetX, event.offsetY)) {
@@ -93,7 +106,11 @@ export class SelectWindow {
     }
     
     selectionChanged() {
-        this.#onSelectionChange(this.#clipSelection.start, this.#clipSelection.end);
+        if(this.#onSelectionChange) {
+            this.#onSelectionChange(this.#clipSelection.start, this.#clipSelection.end);
+        } else {
+            this.draw();
+        }
     }
 
     mouseUpHandler(event) {

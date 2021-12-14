@@ -18,6 +18,8 @@ const _looperSelection = new SelectWindow(_waveformCtx, 0, HEIGHT, WIDTH,
     }
 );
 
+
+
 export function initDraw(looper) {
     _looper = looper
 }
@@ -58,7 +60,7 @@ function drawWaveform(canvasCtx, waveData) {
 
 
 export function drawDisplay() {
-    drawWaveform();
+    drawWaveform(_waveformCtx, _looper.primaryBufferData2);
     if(_looperSelection) {
         _looperSelection.draw();
     }

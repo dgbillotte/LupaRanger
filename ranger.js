@@ -1,20 +1,36 @@
+import { SelectWindow } from "./select-window.js";
 
 export class Track {
     buffer;
-    loopStart;
-    loopEnd;
+    // loopStart=0;
+    // loopEnd=0;
     playbackRate;
-    clips = []
+    clips = [];
+
+    #canvasCtx;
+
 
     constructor(options) {
         this.buffer = options.buffer;
-        this.loopStart = options.loopStart;
-        this.loopEnd = options.loopEnd;
+        // this.loopStart = options.loopStart;
+        // this.loopEnd = options.loopEnd;
         this.playbackRate = options.playbackRate;
     }
 
-    addClip(start, end) {
-        this.clips.push({start: start, end: end, buffer: undefined});
+    setCanvas(canvas) {
+        this.#canvasCtx = canvas.getContext('2d');
+        this.#canvasCtx.canvas.addEventListener('mousedown', this.mouseDownHandler.bind(this));
+    }
+
+
+    mouseDownHandler(event) {
+        // see if it is a clip click
+
+        // if not, create a new clip
+        // - create a select window, then call it's mouseDown handler
+        let clipWindow = new SelectWindow(this.#canvasCtx, 0, 64, 1024);
+        clipWindow.mouseDownHandler(event);
+        this.clips.push(clipWindow);
     }
 }
 
@@ -23,15 +39,29 @@ export class Ranger {
     #audioContext;
     #tracks = [];
     #playInterval;
-    #lengthSec
+    #lengthSec;
+    #trackList;
 
-    constructor(audioContext, lengthSec=4) {
+    constructor(audioContext, htmlRoot, lengthSec=4) {
         this.#audioContext = audioContext;
         this.#lengthSec = lengthSec;
+        this.#trackList = htmlRoot.querySelector('.tracklist');
     }
 
     addTrack(track) {
         this.#tracks.push(track);
+
+        // add canvas element to html
+        let canvas = document.createElement('canvas');
+        canvas.width=1024;
+        canvas.height=64;
+        canvas.classList.add('track');
+        canvas.id = 'track' + this.#tracks.length;
+        this.#trackList.appendChild(canvas);
+
+        track.setCanvas(canvas);
+
+        // wire up the event handlers for the track
     }
 
     play() {
@@ -45,15 +75,16 @@ export class Ranger {
             for(const clip of track.clips) {
                 const node = new AudioBufferSourceNode(this.#audioContext, {
                     buffer: track.buffer,
-                    loop: true,
-                    loopStart: track.loopStart,
-                    loopEnd: track.loopEnd,
+                    // loop: true,
+                    // loopStart: 0,
+                    // loopEnd: track.buffer.length,
                     playbackRate: track.playbackRate
                 });
-                console.log("playing: ", track.loopStart, track.loopEnd, now, clip.start, clip.end);
+                // console.log("playing: ", track.loopStart, track.loopEnd, now, , clip.end(track.buffer.length));
                 node.connect(this.#audioContext.destination);
-                node.start(now + clip.start);
-                node.stop(now + clip.end);
+                // console.log("Bar Time: ", now, clip.startScaled(this.#lengthSec), clip.endScaled(this.#lengthSec));
+                node.start(now + clip.startScaled(this.#lengthSec));
+                node.stop(now + clip.endScaled(this.#lengthSec));
             }
         }
     }

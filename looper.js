@@ -33,11 +33,18 @@ export class Looper {
     }
 
     cloneLoop() {
+        // "copy" the selection from the primaryBuffer
+        const sampleRate = this.#primaryBuffer.sampleRate;
+        const f32Buf = this.#primaryBuffer.getChannelData(0)
+            .subarray(this.#loopStart*sampleRate, this.#loopEnd*sampleRate);
+        const clippedBuffer = new AudioBuffer({
+            length: this.#primaryBuffer.length,
+            numberOfChannels: 1,
+            sampleRate: sampleRate,
+        });
+        clippedBuffer.copyToChannel(f32Buf, 0);
         return {
-            buffer: this.#primaryBuffer,
-            loop: true,
-            loopStart:  this.#loopStart,
-            loopEnd: this.#loopEnd,
+            buffer: clippedBuffer,
             playbackRate: this.#playbackRate            
         };
     }
