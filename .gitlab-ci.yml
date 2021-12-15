@@ -7,7 +7,7 @@ workflow:
     - if: '$CI_COMMIT_BRANCH'
 
 pages:
-  script: "cp index.html looper.js style.css *.wav public/"
+  script: "cp -r index.html looper.js style.css *.wav public/"
   
   artifacts:
     paths:
