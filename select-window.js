@@ -45,6 +45,21 @@ export class SelectWindow {
             : scaleMax * 1.0 * this.#clipSelection.end / this.#width;
     }
 
+    startEnd(startEnd={}) {
+        let redraw = false;
+        if(startEnd.start) {
+            this.#clipSelection.start = startEnd.start;
+            redraw = true;
+        }
+        if(startEnd.end) {
+            this.#clipSelection.end = startEnd.end;
+            redraw = true;
+        }
+        if(redraw) {
+            this.draw();
+        }
+    }
+
     placeLeftHandle(top, left, height, width) {
         this.#lhTop = top;
         this.#lhLeft = left;

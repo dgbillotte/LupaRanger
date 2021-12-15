@@ -3,6 +3,15 @@
     padding: 10px;
 }
 
-canvas.track {
+.track {
+    display: flex;
+}
+
+.track canvas {
     border: groove #ff9800 1px;
+}
+
+.controls {
+    display: flex;
+    flex-direction: column;
 }

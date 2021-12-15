@@ -12,17 +12,17 @@
             if (! playing) {
 
                 // ----- cut and paste this into the browser terminal
-                const audioContext = new AudioContext();
-                osc = new OscillatorNode(audioContext, { type: 'square', frequency: 200 });
-                osc.connect(audioContext.destination);
+                const audioContext = new AudioContext(); //~highlight-code
+                osc = new OscillatorNode(audioContext, { type: 'square', frequency: 200 }); //~highlight-code
+                osc.connect(audioContext.destination); //~highlight-code
                 const now = audioContext.currentTime;
-                osc.start(now+0);
+                osc.start(now+0); //~highlight-code2
                 // ----- up-to here
 
             } else {
 
                 // ----- cut and paste this to make it stop
-                osc.stop();
+                osc.stop(); //~highlight-code
 
             }
             playing = ! playing;            

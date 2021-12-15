@@ -19,3 +19,12 @@ body {
 .show code:before {
     content: counter(line);
 }
+
+.show code.highlight-code {
+    background-color: #cafffe;
+    color: navy;
+}
+.show code.highlight-code2 {
+    background-color: #cafffe;
+    color: rgb(19, 165, 109);
+}

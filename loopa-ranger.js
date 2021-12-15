@@ -1,11 +1,16 @@
 /*
 Primary Todos:
 
+Bugs:
+- clips that are further right play longer than clips to the left
+
 Features:
 - Add controls:
-  - delete track
-  - clear track (delete clip would be nice, but this works)
-  - track gain / mute
+  - x delete track
+  - x clear track (delete clip would be nice, but this works)
+  - track gain / x mute
+- Audio Library
+- Upload audio file
 - Add an effect or two
 - Stretch: Enable reverse play 
 
@@ -25,8 +30,12 @@ let _initialized = false;
 
 function init() {
     _audioCtx = new AudioContext();
+    // const audioSrc = 'audio/animals.mp3'
+    const audioSrc = 'audio/husky.wav'
+    // const audioSrc = 'audio/stream.wav'
+    // const audioSrc = 'audio/water-pouring.wav'
     // const audioSrc = 'audio/dope-drum-loop_C_major.wav'
-    const audioSrc = 'audio/talking.wav'
+    // const audioSrc = 'audio/talking.wav'
     // const audioSrc = 'audio/sharks1.wav'
     // const audioSrc = 'audio/dungeons.wav'
     // const audioSrc = 'audio/chirp-2secs.wav'
@@ -103,8 +112,10 @@ let trackCount = 0;
 const addTrackButton = document.querySelector('.add-track');
 addTrackButton.addEventListener('click', function() {
     const loop = _superLooper.cloneLoop();
-    const track = new Track(loop);
-    _ranger.addTrack(track);
+    _ranger.createTrack(loop);
+
+    // const track = new Track(loop);
+    // _ranger.addTrack(track);
 });
 
 // Button to toggle Ranger Play/Pause
