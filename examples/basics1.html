@@ -16,7 +16,7 @@
                 osc = new OscillatorNode(audioContext, { type: 'square', frequency: 200 }); //~highlight-code
                 osc.connect(audioContext.destination); //~highlight-code
                 const now = audioContext.currentTime;
-                osc.start(now+0); //~highlight-code2
+                osc.start(now+0); //~highlight-code
                 // ----- up-to here
 
             } else {
@@ -30,7 +30,7 @@
 
         document.addEventListener('DOMContentLoaded', function () {
             document.getElementById('playButton').addEventListener('click', function() {
-                buttonHandler()
+                buttonHandler();
             });
         });    
     </script>
@@ -63,10 +63,10 @@
         </div>
     
         <h2>Play with the code</h2>
-        <p>Cut and paste lines #8-12, above, into your browser console to get sound immediately. Cut and paste line #18 to stop the sound</p>
-        <p>Line #9: try different values for frequency or instead of 'square', try 'sine', 'sawtooth', or 'triangle'</p>
+        <p>Cut and paste lines #8-12, above, into your browser console to get sound immediately. Cut and paste line #18 to stop the sound.</p>
+        <p>Line #9: try different values for frequency or instead of 'square', try 'sine', 'sawtooth', or 'triangle'.</p>
         <p>Line #11: tells the audio engine to start the oscillator right now. Can you make it start in 5 seconds?</p>
-        <p>Line #25: stop() works similarly to start(), so you can schedule the stop ahead of time.</p>
+        <p>Line #25: stop() works similarly to start(), so you can schedule the stop ahead of time?</p>
     </main>
 
     <script src="../show.js"></script>

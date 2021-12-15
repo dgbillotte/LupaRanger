@@ -15,12 +15,12 @@
 
                 // ----- cut and paste this into the browser terminal
                 const audioContext = new AudioContext();
-                gain = new GainNode(audioContext);
+                gain = new GainNode(audioContext); //~highlight-code
                 osc1 = new OscillatorNode(audioContext, { type: 'square', frequency: 200 });
-                osc1.connect(gain);
-                osc2 = new OscillatorNode(audioContext, { type: 'sine', frequency: 400 });
-                osc2.connect(gain);
-                gain.connect(audioContext.destination);
+                osc1.connect(gain); //~highlight-code
+                osc2 = new OscillatorNode(audioContext, { type: 'sine', frequency: 400 }); //~highlight-code
+                osc2.connect(gain); //~highlight-code
+                gain.connect(audioContext.destination); //~highlight-code
 
                 const now = audioContext.currentTime;
                 osc1.start(now+0.25); // slight delay so you can hear it come in
@@ -58,8 +58,8 @@
         <p>To the previous example, we are adding:
             <ol>
                 <li>Line #11: Add a GainNode. This is for volume control</li>
-                <li>Line #12: Add another oscillator</li>
-                <li>Lines #13-16: Connect the nodes together</li>
+                <li>Line #14: Add another oscillator</li>
+                <li>Lines #13,15-16: Connect the nodes together</li>
             </ol>
         </p>
     
