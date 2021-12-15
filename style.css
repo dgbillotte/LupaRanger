@@ -4,5 +4,5 @@
 }
 
 canvas.track {
-    background-color: blue;
+    border: groove #ff9800 1px;
 }

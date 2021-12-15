@@ -1,14 +1,13 @@
 /*
 Primary Todos:
-- clean up to some simple Vanilla standard
 
 Features:
-- X make play restart when loop-window changes
-- X make loop-window drag-resizeable
+- Add controls:
+  - delete track
+  - clear track (delete clip would be nice, but this works)
+  - track gain / mute
 - Add an effect or two
 - Stretch: Enable reverse play 
-- increase/decrease playback speed
-
 
 */
 import {drawDisplay, initDraw } from "./loopa-draw.js";
@@ -27,12 +26,12 @@ let _initialized = false;
 function init() {
     _audioCtx = new AudioContext();
     // const audioSrc = 'audio/dope-drum-loop_C_major.wav'
-    // const audioSrc = 'audio/talking.wav'
+    const audioSrc = 'audio/talking.wav'
     // const audioSrc = 'audio/sharks1.wav'
     // const audioSrc = 'audio/dungeons.wav'
-    const audioSrc = 'audio/chirp-2secs.wav'
+    // const audioSrc = 'audio/chirp-2secs.wav'
     // const audioSrc = 'audio/bari1.wav'
-
+    
     // Gain node. Chain up any other filters/effects here
     _gainNode = _audioCtx.createGain();
 

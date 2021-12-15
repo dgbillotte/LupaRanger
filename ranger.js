@@ -2,35 +2,57 @@ import { SelectWindow } from "./select-window.js";
 
 export class Track {
     buffer;
-    // loopStart=0;
-    // loopEnd=0;
     playbackRate;
     clips = [];
+    #activeClip
+
 
     #canvasCtx;
 
 
     constructor(options) {
         this.buffer = options.buffer;
-        // this.loopStart = options.loopStart;
-        // this.loopEnd = options.loopEnd;
         this.playbackRate = options.playbackRate;
     }
 
     setCanvas(canvas) {
         this.#canvasCtx = canvas.getContext('2d');
         this.#canvasCtx.canvas.addEventListener('mousedown', this.mouseDownHandler.bind(this));
+        this.#canvasCtx.canvas.addEventListener('mouseup', this.mouseUpHandler.bind(this));
     }
 
+    draw() {
+        console.log("Track.draw()");
+        this.#canvasCtx.clearRect(0, 0, this.#canvasCtx.canvas.width, this.#canvasCtx.canvas.height);
+        this.#canvasCtx.fillStyle = 'rgb(32,32,32)';
+        this.#canvasCtx.fillRect(0, 0, this.#canvasCtx.canvas.width, this.#canvasCtx.canvas.height);
+
+        for(const clip of this.clips) {
+            clip.draw();
+        }
+    }
 
     mouseDownHandler(event) {
         // see if it is a clip click
+        for(const clip of this.clips) {
+            if(clip.inSelection(event.offsetX, event.offsetY)) {
+                this.#activeClip = clip;
+                clip.mouseDownHandler(event);
+                return;
+            }
+        }
 
         // if not, create a new clip
-        // - create a select window, then call it's mouseDown handler
-        let clipWindow = new SelectWindow(this.#canvasCtx, 0, 64, 1024);
+        let clipWindow = new SelectWindow(this.#canvasCtx, 0, 64, 1024, this.draw.bind(this), false);
         clipWindow.mouseDownHandler(event);
         this.clips.push(clipWindow);
+    }
+
+    mouseUpHandler(event) {
+        if(this.#activeClip) {
+            this.#activeClip.mouseUpHandler(event);
+            this.#activeClip = null;
+        }
     }
 }
 
@@ -41,27 +63,25 @@ export class Ranger {
     #playInterval;
     #lengthSec;
     #trackList;
-
+    
     constructor(audioContext, htmlRoot, lengthSec=4) {
         this.#audioContext = audioContext;
         this.#lengthSec = lengthSec;
         this.#trackList = htmlRoot.querySelector('.tracklist');
     }
-
+    
     addTrack(track) {
-        this.#tracks.push(track);
+        // add new canvas to the document
+        const tmp = document.createElement('div');
+        tmp.innerHTML =
+            `<canvas class="track" id=track${this.#tracks.length} width=1024 height="64"></canvas>`;
+        const canvas = tmp.firstChild;
 
-        // add canvas element to html
-        let canvas = document.createElement('canvas');
-        canvas.width=1024;
-        canvas.height=64;
-        canvas.classList.add('track');
-        canvas.id = 'track' + this.#tracks.length;
+
         this.#trackList.appendChild(canvas);
-
+        
         track.setCanvas(canvas);
-
-        // wire up the event handlers for the track
+        this.#tracks.push(track);
     }
 
     play() {
@@ -75,16 +95,12 @@ export class Ranger {
             for(const clip of track.clips) {
                 const node = new AudioBufferSourceNode(this.#audioContext, {
                     buffer: track.buffer,
-                    // loop: true,
-                    // loopStart: 0,
-                    // loopEnd: track.buffer.length,
+                    loop: true,
+
                     playbackRate: track.playbackRate
                 });
-                // console.log("playing: ", track.loopStart, track.loopEnd, now, , clip.end(track.buffer.length));
                 node.connect(this.#audioContext.destination);
-                // console.log("Bar Time: ", now, clip.startScaled(this.#lengthSec), clip.endScaled(this.#lengthSec));
-                node.start(now + clip.startScaled(this.#lengthSec));
-                node.stop(now + clip.endScaled(this.#lengthSec));
+                node.start(now + clip.startScaled(this.#lengthSec), 0, clip.endScaled(this.#lengthSec));
             }
         }
     }

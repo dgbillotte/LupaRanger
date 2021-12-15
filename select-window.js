@@ -21,10 +21,12 @@ export class SelectWindow {
     windowBorderColor = 'rgb(128, 128, 128)';
     windowHandleColor = 'rgb(128, 128, 128)';
 
-    constructor(canvasContext, top, bottom, width, onSelectionChange=null) {
+    constructor(canvasContext, top, bottom, width, onSelectionChange=null, wireMouseDownUp=true) {
         this.#canvasCtx = canvasContext;
-        this.#canvasCtx.canvas.addEventListener('mousedown', this.mouseDownHandler.bind(this));
-        this.#canvasCtx.canvas.addEventListener('mouseup', this.mouseUpHandler.bind(this));
+        if(wireMouseDownUp) {
+            this.#canvasCtx.canvas.addEventListener('mousedown', this.mouseDownHandler.bind(this));
+            this.#canvasCtx.canvas.addEventListener('mouseup', this.mouseUpHandler.bind(this));
+        }
         this.#onSelectionChange = onSelectionChange;
         this.#top = top;
         this.#bottom = bottom;
@@ -100,6 +102,7 @@ export class SelectWindow {
             handler = this.createSelectionMouseMove;
         }
         if(handler) {
+            this.#canvasCtx.canvas.removeEventListener('mousemove', this.#mouseMoveHandler);
             this.#mouseMoveHandler = handler.bind(this);
             this.#canvasCtx.canvas.addEventListener('mousemove', this.#mouseMoveHandler);
         }
@@ -116,6 +119,7 @@ export class SelectWindow {
     mouseUpHandler(event) {
         this.#canvasCtx.canvas.removeEventListener('mousemove', this.#mouseMoveHandler);
         this.selectionChanged();
+        console.log("mouse up fired");
     }
     
     createSelectionMouseMove(event) {
@@ -157,5 +161,12 @@ export class SelectWindow {
             y >= this.#top + this.#rhTop &&
             y <= this.#top + this.#rhTop + this.#rhHeight
         );
+    }
+
+    inSelection(x,y) {
+        return (
+            x >= this.#clipSelection.start && x < this.#clipSelection.end
+            && y >= this.#top && y < this.#bottom)
+            || this.inLeftHandle(x,y) || this.inRightHandle(x,y);
     }
 }

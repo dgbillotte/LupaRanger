@@ -1,0 +1,21 @@
+body {
+    padding: 1em;
+}
+.show {
+    padding: 0.5em;
+    background-color: #b1b1b1;
+}
+
+.show pre {
+    counter-reset: line;
+    background-color: #f0f0f0;
+    padding: 1em;
+}
+
+.show code {
+    counter-increment: line;
+}
+
+.show code:before {
+    content: counter(line);
+}

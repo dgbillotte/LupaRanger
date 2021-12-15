@@ -29,7 +29,7 @@ export class Looper {
             chain = chain.connect(this.#downstreamChain[i]);
         } 
                 
-        this.#looper.start();
+        this.#looper.start(0, this.#loopStart); // use the offset here to start at the right time
     }
 
     cloneLoop() {
@@ -38,7 +38,7 @@ export class Looper {
         const f32Buf = this.#primaryBuffer.getChannelData(0)
             .subarray(this.#loopStart*sampleRate, this.#loopEnd*sampleRate);
         const clippedBuffer = new AudioBuffer({
-            length: this.#primaryBuffer.length,
+            length: f32Buf.length,
             numberOfChannels: 1,
             sampleRate: sampleRate,
         });
