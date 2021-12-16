@@ -133,6 +133,9 @@ export class SelectWindow {
 
     mouseUpHandler(event) {
         this.#canvasCtx.canvas.removeEventListener('mousemove', this.#mouseMoveHandler);
+        if(this.#clipSelection.start > this.#clipSelection.end) {
+            [this.#clipSelection.start, this.#clipSelection.end] = [this.#clipSelection.end, this.#clipSelection.start];
+        }
         this.selectionChanged();
         console.log("mouse up fired");
     }
