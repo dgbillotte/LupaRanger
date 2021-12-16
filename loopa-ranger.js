@@ -31,13 +31,13 @@ let _initialized = false;
 function init() {
     _audioCtx = new AudioContext();
     // const audioSrc = 'audio/animals.mp3'
-    const audioSrc = 'audio/husky.wav'
+    // const audioSrc = 'audio/husky.wav'
     // const audioSrc = 'audio/stream.wav'
     // const audioSrc = 'audio/water-pouring.wav'
     // const audioSrc = 'audio/dope-drum-loop_C_major.wav'
     // const audioSrc = 'audio/talking.wav'
     // const audioSrc = 'audio/sharks1.wav'
-    // const audioSrc = 'audio/dungeons.wav'
+    const audioSrc = 'audio/dungeons.wav'
     // const audioSrc = 'audio/chirp-2secs.wav'
     // const audioSrc = 'audio/bari1.wav'
     
