@@ -25,8 +25,9 @@ export class Looper {
         });
 
         let chain = this.#looper;
-        for(let i=0; i < this.#downstreamChain.length; i++) {
-            chain = chain.connect(this.#downstreamChain[i]);
+        for(let node of this.#downstreamChain) {
+            node = (typeof(node) === 'function') ? node() : node;
+            chain = chain.connect(node);
         } 
                 
         this.#looper.start(0, this.#loopStart); // use the offset here to start at the right time

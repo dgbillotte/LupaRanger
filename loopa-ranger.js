@@ -23,9 +23,25 @@ import {Ranger, Track} from "./ranger.js"
 let _audioCtx;
 let _superLooper;
 let _gainNode;
+let _distNode;
 let _ranger;
 let _initialized = false;
+let _distortionAmount = 0;
 // UI / selection window variables
+
+function makeDistortionCurve(amount) {
+    var k = typeof amount === 'number' ? amount : 50,
+      n_samples = 44100,
+      curve = new Float32Array(n_samples),
+      deg = Math.PI / 180,
+      i = 0,
+      x;
+    for ( ; i < n_samples; ++i ) {
+      x = i * 2 / n_samples - 1;
+      curve[i] = ( 3 + k ) * x * 20 * deg / ( Math.PI + k * Math.abs(x) );
+    }
+    return curve;
+  };
 
 
 function init() {
@@ -44,8 +60,20 @@ function init() {
     // Gain node. Chain up any other filters/effects here
     _gainNode = _audioCtx.createGain();
 
+    _distNode = _audioCtx.createWaveShaper();
+    _distNode.curve = makeDistortionCurve(_distortionAmount);
+    _distNode.oversample = '4x';
+    
+    let distNodeF = function() {
+        _distNode = _audioCtx.createWaveShaper();
+        _distNode.curve = makeDistortionCurve(_distortionAmount);
+        _distNode.oversample = '4x';
+        return _distNode;
+    };
+
+
     // create the looper
-    _superLooper = new Looper(_audioCtx, [_gainNode]);
+    _superLooper = new Looper(_audioCtx, [_gainNode, distNodeF]);
 
     // load the first file and get everything going
     fetchLooperFile(audioSrc, function(audioBuffer) {
@@ -64,6 +92,13 @@ function init() {
     playbackSpeed.addEventListener('input', function() {
         _superLooper.playbackRate(this.value);
     }, false);
+
+    // distortion
+    const distortionAmount = document.getElementById('distortion');
+    distortionAmount.addEventListener('input', function() {
+        _distortionAmount = this.value;
+        _distNode.curve = makeDistortionCurve(_distortionAmount);
+    });
 
     // setup the arranger
     const rangerElement = document.querySelector('#ranger');
