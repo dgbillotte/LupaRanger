@@ -113,14 +113,14 @@ export class Ranger {
         const trackId = 'track' + this.#tracks.length;
         const tmp = document.createElement('div');
         tmp.innerHTML =
-        `<div class="track" id=${trackId}>
-            <div class="controls">
-                <button class="delete">Delete</button>
-                <button class="clear">Clear</button>
-                <button class="mute">Mute</button>
-            </div>
-            <canvas class="track" width=1024 height="64"></canvas>
-        </div>`;
+            `<div class="track" id="${trackId}">
+                <div class="controls">
+                    <button class="delete">Delete</button>
+                    <button class="clear">Clear</button>
+                    <button class="mute">Mute</button>
+                </div>
+                <canvas class="track" width=1024 height="64"></canvas>
+            </div>`;
         const trackHTML = tmp.firstChild;
 
 

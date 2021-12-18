@@ -18,6 +18,7 @@ Features:
 import {drawDisplay, initDraw } from "./loopa-draw.js";
 import {Looper} from "./looper.js"
 import {Ranger, Track} from "./ranger.js"
+import {SystemBus} from "./bus.js"
 
 // Audio / looper variables
 let _audioCtx;
@@ -27,11 +28,12 @@ let _distNode;
 let _ranger;
 let _initialized = false;
 let _distortionAmount = 0;
+let _bus;
 // UI / selection window variables
 
 function makeDistortionCurve(amount) {
     var k = typeof amount === 'number' ? amount : 50,
-      n_samples = 44100,
+      n_samples = 256,
       curve = new Float32Array(n_samples),
       deg = Math.PI / 180,
       i = 0,
@@ -42,6 +44,7 @@ function makeDistortionCurve(amount) {
     }
     return curve;
   };
+
 
 
 function init() {
@@ -57,31 +60,44 @@ function init() {
     // const audioSrc = 'audio/chirp-2secs.wav'
     // const audioSrc = 'audio/bari1.wav'
     
-    // Gain node. Chain up any other filters/effects here
-    _gainNode = _audioCtx.createGain();
 
-    _distNode = _audioCtx.createWaveShaper();
-    _distNode.curve = makeDistortionCurve(_distortionAmount);
-    _distNode.oversample = '4x';
+    // 
+    const busElement = document.getElementById('master-bus');
+    _bus = new SystemBus(_audioCtx, busElement);
+
     
-    let distNodeF = function() {
-        _distNode = _audioCtx.createWaveShaper();
-        _distNode.curve = makeDistortionCurve(_distortionAmount);
-        _distNode.oversample = '4x';
-        return _distNode;
-    };
-
-
     // create the looper
-    _superLooper = new Looper(_audioCtx, [_gainNode, distNodeF]);
-
+    const busConnection = _bus.addChannel("Loop Cutter");
+    _superLooper = new Looper(_audioCtx, busConnection);
+    
     // load the first file and get everything going
     fetchLooperFile(audioSrc, function(audioBuffer) {
         _superLooper.loadPrimaryBuffer(audioBuffer);
         initDraw(_superLooper);
         drawDisplay();
     });
+    
+    // setup the arranger
+    const rangerElement = document.querySelector('#ranger');
+    _ranger = new Ranger(_audioCtx, rangerElement);
+    
+    //
+    // Connect up the node graph
+    // 
+    // _gainNode = _audioCtx.createGain();
 
+    _distNode = _audioCtx.createWaveShaper();
+    _distNode.curve = makeDistortionCurve(_distortionAmount);
+    _distNode.oversample = '4x';
+    
+    _bus.appendEffects(_distNode);
+
+    // _gainNode.connect(_distNode).connect(_audioCtx.destination);
+
+
+    //
+    // connect up all of the UI controls
+    //
     // connect the volume slider to the gainNode
     const volumeControl = document.querySelector('[data-action="volume"]');
     volumeControl.addEventListener('input', function() {
@@ -100,9 +116,10 @@ function init() {
         _distNode.curve = makeDistortionCurve(_distortionAmount);
     });
 
-    // setup the arranger
-    const rangerElement = document.querySelector('#ranger');
-    _ranger = new Ranger(_audioCtx, rangerElement);
+
+
+
+ 
 
 
 

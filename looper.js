@@ -9,10 +9,10 @@ export class Looper {
     #downstreamChain;
     #playbackRate= 1.0;
     
-    constructor(audioContext, downstreamChain=[]) {
+    constructor(audioContext, downstreamChain) {
         this.#audioContext = audioContext;
         this.#downstreamChain = downstreamChain;
-        this.#downstreamChain.push(this.#audioContext.destination);
+        // this.#downstreamChain.push(this.#audioContext.destination);
     }
 
     play() {
@@ -23,12 +23,7 @@ export class Looper {
             loopEnd: this.#loopEnd,
             playbackRate: this.#playbackRate
         });
-
-        let chain = this.#looper;
-        for(let node of this.#downstreamChain) {
-            node = (typeof(node) === 'function') ? node() : node;
-            chain = chain.connect(node);
-        } 
+        this.#looper.connect(this.#downstreamChain); 
                 
         this.#looper.start(0, this.#loopStart); // use the offset here to start at the right time
     }
@@ -52,12 +47,13 @@ export class Looper {
     
     stop() {
         this.#looper.stop();
+        this.#looper.disconnect(this.#downstreamChain);
         this.#looper = null;
     }
     
     reset() {
         if(this.#looper) {
-            this.#looper.stop();
+            this.stop();
             this.play();
         }
     }
