@@ -15,6 +15,11 @@ export class SystemBus {
         this.#finalVol = new GainNode(audioContext);
         this.#finalChain = [this.#finalVol, audioContext.destination];
         this.reconnectDownChain();
+
+        const volumeControl = document.querySelector('#master-bus .master .volume');
+        volumeControl.addEventListener('input', function(event) {
+            this.#finalVol.gain.value = event.target.value; //1;//this.value;
+        }.bind(this));
     }
 
     reconnectDownChain() {
@@ -41,15 +46,16 @@ export class SystemBus {
             name = channelId;
         }
 
-        const channelHtml = stringToHTML(
-            `
-            <div class="channel" id="${channelId}">
-            <p>Channel: ${name}</p?
+        const tmp = document.createElement('div');
+        tmp.innerHTML = 
+            `<div class="channel" id="${channelId}">
+                <p>Channel: ${name}</p>
             </div>
-            `
-        );
-
-        document.querySelector('#master-bus .channels').appendChild(channelHtml)
+            `;
+        const channelHTML = tmp.firstChild;
+            
+        const channelsSection = document.querySelector('#master-bus .channels');
+        channelsSection.appendChild(channelHTML);
 
 
         const gain = new GainNode(this.#audioContext);

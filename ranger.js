@@ -88,13 +88,15 @@ export class Track {
 
 export class Ranger {
     #audioContext;
+    #downstreamChain;
     #tracks = [];
     #playInterval;
     #lengthSec;
     #trackList;
     
-    constructor(audioContext, htmlRoot, lengthSec=4) {
+    constructor(audioContext, htmlRoot, downstreamChain, lengthSec=4) {
         this.#audioContext = audioContext;
+        this.#downstreamChain = downstreamChain;
         this.#lengthSec = lengthSec;
         this.#trackList = htmlRoot.querySelector('.tracklist');
     }
@@ -120,7 +122,8 @@ export class Ranger {
                     <button class="mute">Mute</button>
                 </div>
                 <canvas class="track" width=1024 height="64"></canvas>
-            </div>`;
+            </div>
+            `;
         const trackHTML = tmp.firstChild;
 
 
@@ -153,7 +156,7 @@ export class Ranger {
     
                         playbackRate: track.playbackRate
                     });
-                    node.connect(this.#audioContext.destination);
+                    node.connect(this.#downstreamChain);
                     node.start(now + clip.startScaled(this.#lengthSec), 0, clip.endScaled(this.#lengthSec));
                 }
             }

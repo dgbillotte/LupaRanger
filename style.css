@@ -1,3 +1,16 @@
+.looper {
+    background-color: #ff9800;
+}
+
+#ranger {
+    background-color:blueviolet;
+}
+
+#master-bus {
+    background-color:darkgreen
+}
+
+
 .tracklist {
     background-color: black;
     padding: 10px;

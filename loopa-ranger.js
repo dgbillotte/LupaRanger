@@ -27,7 +27,7 @@ let _gainNode;
 let _distNode;
 let _ranger;
 let _initialized = false;
-let _distortionAmount = 0;
+let _distortionAmount = 1;
 let _bus;
 // UI / selection window variables
 
@@ -44,10 +44,11 @@ function makeDistortionCurve(amount) {
     }
     return curve;
   };
-
-
-
-function init() {
+  
+  
+  
+  function init() {
+    _initialized = true;
     _audioCtx = new AudioContext();
     // const audioSrc = 'audio/animals.mp3'
     // const audioSrc = 'audio/husky.wav'
@@ -61,69 +62,49 @@ function init() {
     // const audioSrc = 'audio/bari1.wav'
     
 
-    // 
+    // Create the master bus
     const busElement = document.getElementById('master-bus');
     _bus = new SystemBus(_audioCtx, busElement);
 
     
-    // create the looper
-    const busConnection = _bus.addChannel("Loop Cutter");
-    _superLooper = new Looper(_audioCtx, busConnection);
+    // setup the looper
+    const looperBusConnection = _bus.addChannel("Loop Cutter");
+    _superLooper = new Looper(_audioCtx, looperBusConnection);
     
-    // load the first file and get everything going
-    fetchLooperFile(audioSrc, function(audioBuffer) {
-        _superLooper.loadPrimaryBuffer(audioBuffer);
-        initDraw(_superLooper);
-        drawDisplay();
-    });
     
     // setup the arranger
+    const rangerBusConnection = _bus.addChannel("Ranger");
     const rangerElement = document.querySelector('#ranger');
-    _ranger = new Ranger(_audioCtx, rangerElement);
+    _ranger = new Ranger(_audioCtx, rangerElement, rangerBusConnection);
     
     //
-    // Connect up the node graph
+    // Add any master effects
     // 
-    // _gainNode = _audioCtx.createGain();
-
     _distNode = _audioCtx.createWaveShaper();
     _distNode.curve = makeDistortionCurve(_distortionAmount);
     _distNode.oversample = '4x';
-    
     _bus.appendEffects(_distNode);
-
-    // _gainNode.connect(_distNode).connect(_audioCtx.destination);
-
-
+    
+    
     //
     // connect up all of the UI controls
     //
-    // connect the volume slider to the gainNode
-    const volumeControl = document.querySelector('[data-action="volume"]');
-    volumeControl.addEventListener('input', function() {
-        _gainNode.gain.value = this.value;
-    }, false);
-
-    const playbackSpeed = document.querySelector('[data-action="playback-speed"]');
-    playbackSpeed.addEventListener('input', function() {
-        _superLooper.playbackRate(this.value);
-    }, false);
-
-    // distortion
+    
+    // distortion. this is a master chain control
     const distortionAmount = document.getElementById('distortion');
     distortionAmount.addEventListener('input', function() {
         _distortionAmount = this.value;
         _distNode.curve = makeDistortionCurve(_distortionAmount);
     });
-
-
-
-
- 
-
-
-
-    _initialized = true;
+    
+    //
+    // load the first file and get everything going
+    //
+    fetchLooperFile(audioSrc, function(audioBuffer) {
+        _superLooper.loadPrimaryBuffer(audioBuffer);
+        initDraw(_superLooper);
+        drawDisplay();
+    });
 }
 
 //------------------ Register Event Handlers -----------------------

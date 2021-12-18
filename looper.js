@@ -12,7 +12,11 @@ export class Looper {
     constructor(audioContext, downstreamChain) {
         this.#audioContext = audioContext;
         this.#downstreamChain = downstreamChain;
-        // this.#downstreamChain.push(this.#audioContext.destination);
+        
+        const playbackSpeedControl = document.querySelector('#looper .controls .playback-speed');
+        playbackSpeedControl.addEventListener('input', function(event) {
+            this.playbackRate(event.target.value);
+        }.bind(this));
     }
 
     play() {
