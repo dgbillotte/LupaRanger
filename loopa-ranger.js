@@ -1,6 +1,14 @@
 /*
 Primary Todos:
 
+Next Steps:
+- Source track library
+- Expose the clips behind tracks as their own entity that can be:
+  - modified (reloaded in the looper)
+  - cloned
+- MIDI or pitched composer interface of some kind
+  - https://developer.mozilla.org/en-US/docs/Web/API/Web_MIDI_API
+
 Bugs:
 
 

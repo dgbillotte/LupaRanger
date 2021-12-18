@@ -18,7 +18,7 @@ export class SystemBus {
 
         const volumeControl = document.querySelector('#master-bus .master .volume');
         volumeControl.addEventListener('input', function(event) {
-            this.#finalVol.gain.value = event.target.value; //1;//this.value;
+            this.#finalVol.gain.value = event.target.value; 
         }.bind(this));
     }
 
