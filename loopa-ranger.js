@@ -2,12 +2,10 @@
 Primary Todos:
 
 Bugs:
-- clips that are further right play longer than clips to the left
+
 
 Features:
 - Add controls:
-  - x delete track
-  - x clear track (delete clip would be nice, but this works)
   - track gain / x mute
 - Audio Library
 - Upload audio file

@@ -157,7 +157,9 @@ export class Ranger {
                         playbackRate: track.playbackRate
                     });
                     node.connect(this.#downstreamChain);
-                    node.start(now + clip.startScaled(this.#lengthSec), 0, clip.endScaled(this.#lengthSec));
+                    const start = clip.startScaled(this.#lengthSec);
+                    const length = clip.endScaled(this.#lengthSec) - start;
+                    node.start(now + start, 0, length);
                 }
             }
         }
