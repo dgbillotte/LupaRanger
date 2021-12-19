@@ -1,8 +1,5 @@
 import { SelectWindow } from "./select-window.js";
 
-export const WIDTH = 1024;
-export const HEIGHT = 256;
-
 const DISPLAY_BACKGROUND = 'rgb(32, 32, 32)';
 const WAVEFORM_COLOR = 'rgb(0, 255, 0)';
 
@@ -11,22 +8,20 @@ const _waveformCtx = waveformCanvas.getContext("2d");
 
 let _looper;
 
-
-
-function newSelectWindow(canvasCtx, top, bottom, width) {
-    return new SelectWindow(_waveformCtx, 0, HEIGHT, WIDTH,
+function createLooperSelectWindow(canvasCtx, top, bottom, width) {
+    return new SelectWindow(canvasCtx, top, bottom, width,
         function(start, end) {
-            _looper.reClip(start, end, WIDTH);
+            _looper.reClip(start, end, canvasCtx.canvas.width);
             drawDisplay();   
         }
     );
 }
 
-let _looperSelection = new SelectWindow(_waveformCtx, 0, HEIGHT, WIDTH);
+
+let _looperSelection = createLooperSelectWindow(_waveformCtx, 0, _waveformCtx.canvas.height, _waveformCtx.canvas.height);
 
 export function resetSelection() {
-    _looperSelection = new SelectWindow(_waveformCtx, 0, HEIGHT, WIDTH);
-    // drawDisplay();
+    _looperSelection = createLooperSelectWindow(_waveformCtx, 0, _waveformCtx.canvas.height, _waveformCtx.canvas.height);
 }
     
 
@@ -39,19 +34,21 @@ export function initDraw(looper) {
 
  
 function drawWaveform(canvasCtx, waveData) {
-    canvasCtx.clearRect(0, 0, WIDTH, HEIGHT);
+    const width = canvasCtx.canvas.width;
+    const height = canvasCtx.canvas.height;
+    canvasCtx.clearRect(0, 0, width, height);
     
     canvasCtx.fillStyle = DISPLAY_BACKGROUND;  
-    canvasCtx.fillRect(0, 0, WIDTH, HEIGHT);
+    canvasCtx.fillRect(0, 0, width, height);
     
     canvasCtx.lineWidth = 1;
     canvasCtx.strokeStyle = WAVEFORM_COLOR;
     canvasCtx.beginPath();
     
-    const sliceWidth = WIDTH * 1.0 / waveData.length;
+    const sliceWidth = width * 1.0 / waveData.length;
     let x = 0;
     
-    const center = HEIGHT / 2;
+    const center = height / 2;
     for(let i = 0; i < waveData.length; i++) {
         const y = center + (waveData[i] * center);
         
@@ -64,7 +61,7 @@ function drawWaveform(canvasCtx, waveData) {
         x += sliceWidth;
     }
     
-    canvasCtx.lineTo(WIDTH, HEIGHT/2);
+    canvasCtx.lineTo(width, height/2);
     canvasCtx.stroke();
 }
 

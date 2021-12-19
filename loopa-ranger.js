@@ -8,6 +8,11 @@ Next Steps:
   - cloned
 - MIDI or pitched composer interface of some kind
   - https://developer.mozilla.org/en-US/docs/Web/API/Web_MIDI_API
+- Visuals:
+  - display info about buffers, clips, tracks, etc: length (samples and time), sampleRate
+  - show a running "read-head" on displayed waveforms when they are running
+    - display info about read-head position
+    - allow manipulation of the read-head
 
 Bugs:
 
@@ -29,7 +34,6 @@ import {SystemBus} from "./bus.js"
 // Audio / looper variables
 let _audioCtx;
 let _superLooper;
-let _gainNode;
 let _distNode;
 let _ranger;
 let _initialized = false;
@@ -72,23 +76,28 @@ function makeDistortionCurve(amount) {
     const fileField = document.getElementById('local-file');
     fileField.addEventListener('input', function(event) {
       const file = event.target.files[0];
-      let ab = [];
-      let foo = file.arrayBuffer()
+
+      file.arrayBuffer()
         .then(function(buffer) {
           return _audioCtx.decodeAudioData(buffer);
         }).then(function(audioBuffer) {
-          ab = audioBuffer;
-          // reset the looper selection
-          resetSelection();
-
-          // set the buffer in the looper
           _superLooper.loadPrimaryBuffer(audioBuffer);
-          _sourceBuffers.push({name: "uploaded", audioBuffer: audioBuffer});
-          // initDraw(_superLooper);
+          const name = 'uploaded';
+          _sourceBuffers.push({name: name, audioBuffer: audioBuffer});
+          resetSelection();
           drawDisplay();
-          
-        });
-      let a = 4;
+
+          const tmp = document.createElement('tbody');
+          tmp.innerHTML =
+            `<tr>
+              <td>${file.name}</td>
+              <td>${audioBuffer.length}</td>
+              <td><button>Do Som.</button></td>
+            </tr>
+            `;
+          const loadedFiles = document.querySelector('#files .loaded tbody');
+          loadedFiles.appendChild(tmp.firstChild);
+      });
     });
 
     // Create the master bus
@@ -134,6 +143,17 @@ function makeDistortionCurve(amount) {
         _sourceBuffers.push({name: audioSrc, audioBuffer: audioBuffer});
         initDraw(_superLooper);
         drawDisplay();
+
+        const tmp = document.createElement('tbody');
+        tmp.innerHTML =
+          `<tr>
+            <td>${audioSrc}</td>
+            <td>${audioBuffer.length}</td>
+            <td><button>Do Som.</button></td>
+          </tr>
+          `;
+        const loadedFiles = document.querySelector('#files .loaded tbody');
+        loadedFiles.appendChild(tmp.firstChild);        
     });
 }
 
@@ -176,9 +196,6 @@ const addTrackButton = document.querySelector('.add-track');
 addTrackButton.addEventListener('click', function() {
     const loop = _superLooper.cloneLoop();
     _ranger.createTrack(loop);
-
-    // const track = new Track(loop);
-    // _ranger.addTrack(track);
 });
 
 // Button to toggle Ranger Play/Pause
