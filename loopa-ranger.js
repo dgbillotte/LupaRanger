@@ -21,7 +21,7 @@ Features:
 - Stretch: Enable reverse play 
 
 */
-import {drawDisplay, initDraw } from "./loopa-draw.js";
+import {drawDisplay, initDraw, resetSelection } from "./loopa-draw.js";
 import {Looper} from "./looper.js"
 import {Ranger, Track} from "./ranger.js"
 import {SystemBus} from "./bus.js"
@@ -35,6 +35,7 @@ let _ranger;
 let _initialized = false;
 let _distortionAmount = 1;
 let _bus;
+const _sourceBuffers = [];
 // UI / selection window variables
 
 function makeDistortionCurve(amount) {
@@ -67,6 +68,28 @@ function makeDistortionCurve(amount) {
     // const audioSrc = 'audio/chirp-2secs.wav'
     // const audioSrc = 'audio/bari1.wav'
     
+
+    const fileField = document.getElementById('local-file');
+    fileField.addEventListener('input', function(event) {
+      const file = event.target.files[0];
+      let ab = [];
+      let foo = file.arrayBuffer()
+        .then(function(buffer) {
+          return _audioCtx.decodeAudioData(buffer);
+        }).then(function(audioBuffer) {
+          ab = audioBuffer;
+          // reset the looper selection
+          resetSelection();
+
+          // set the buffer in the looper
+          _superLooper.loadPrimaryBuffer(audioBuffer);
+          _sourceBuffers.push({name: "uploaded", audioBuffer: audioBuffer});
+          // initDraw(_superLooper);
+          drawDisplay();
+          
+        });
+      let a = 4;
+    });
 
     // Create the master bus
     const busElement = document.getElementById('master-bus');
@@ -108,6 +131,7 @@ function makeDistortionCurve(amount) {
     //
     fetchLooperFile(audioSrc, function(audioBuffer) {
         _superLooper.loadPrimaryBuffer(audioBuffer);
+        _sourceBuffers.push({name: audioSrc, audioBuffer: audioBuffer});
         initDraw(_superLooper);
         drawDisplay();
     });

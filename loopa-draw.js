@@ -11,14 +11,24 @@ const _waveformCtx = waveformCanvas.getContext("2d");
 
 let _looper;
 
-const _looperSelection = new SelectWindow(_waveformCtx, 0, HEIGHT, WIDTH,
-    function(start, end) {
-        _looper.reClip(start, end, WIDTH);
-        drawDisplay();   
-    }
-);
 
 
+function newSelectWindow(canvasCtx, top, bottom, width) {
+    return new SelectWindow(_waveformCtx, 0, HEIGHT, WIDTH,
+        function(start, end) {
+            _looper.reClip(start, end, WIDTH);
+            drawDisplay();   
+        }
+    );
+}
+
+let _looperSelection = new SelectWindow(_waveformCtx, 0, HEIGHT, WIDTH);
+
+export function resetSelection() {
+    _looperSelection = new SelectWindow(_waveformCtx, 0, HEIGHT, WIDTH);
+    // drawDisplay();
+}
+    
 
 export function initDraw(looper) {
     _looper = looper
