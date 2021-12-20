@@ -61,6 +61,8 @@ export class SystemBus {
         const gain = new GainNode(this.#audioContext);
         this.#channels.push({name: name, gain: gain});
 
+        this.reconnectDownChain();
+
         return gain;
     }
 
@@ -117,3 +119,41 @@ class WetDry {
 
 
 }
+
+
+
+// below was copied over from loopa-ranger.js during cleanup as
+// model for using a distortion and adding ot the system bus
+//   //
+//   // Add any master effects
+//   // 
+//   _distNode = _audioCtx.createWaveShaper();
+//   _distNode.curve = makeDistortionCurve(_distortionAmount);
+//   _distNode.oversample = '4x';
+//   _bus.appendEffects(_distNode);
+  
+  
+//   //
+//   // connect up all of the UI controls
+//   //
+  
+//   // distortion. this is a master chain control
+//   const distortionAmount = document.getElementById('distortion');
+//   distortionAmount.addEventListener('input', function() {
+//       _distortionAmount = this.value;
+//       _distNode.curve = makeDistortionCurve(_distortionAmount);
+//   });
+
+// function makeDistortionCurve(amount) {
+//     var k = typeof amount === 'number' ? amount : 50,
+//       n_samples = 256,
+//       curve = new Float32Array(n_samples),
+//       deg = Math.PI / 180,
+//       i = 0,
+//       x;
+//     for ( ; i < n_samples; ++i ) {
+//       x = i * 2 / n_samples - 1;
+//       curve[i] = ( 3 + k ) * x * 20 * deg / ( Math.PI + k * Math.abs(x) );
+//     }
+//     return curve;
+//   };

@@ -33,6 +33,12 @@ export class SelectWindow {
         this.#width = width;
     }
 
+    unregister() {
+        document.removeEventListener('mousemove', this.#mouseMoveHandler);
+        document.removeEventListener('mousedown', this.mouseDownHandler);
+        document.removeEventListener('mouseup', this.mouseUpHandler);
+    }
+
     startScaled(scaleMax=0) {
         return (scaleMax == 0)
             ? this.#clipSelection.start

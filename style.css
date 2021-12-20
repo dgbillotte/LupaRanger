@@ -1,15 +1,55 @@
-.looper {
-    background-color: #ff9800;
+/* 
+font-family: 'Major Mono Display', monospace;
+font-family: 'Wallpoet', cursive;
+font-family: 'Nova Mono', monospace;
+font-family: 'Palette Mosaic', cursive;
+*/
+
+
+/* 
+font-family: 'Share Tech Mono', monospace;
+font-family: 'Teko', sans-serif;
+font-family: 'Ubuntu Mono', monospace;
+*/
+body {
+    background-color: black;
+    /* font-family: 'Teko'; */
+    font-family: 'Share Tech Mono';
 }
 
-#ranger {
-    background-color:blueviolet;
+
+h3 {
+    background-color: #323232;
+    color: orange;
+    /* color: white; */
+    margin: 0;
+    font-family: "Major Mono Display";
+    /* font-family: "Wallpoet"; */
 }
 
-#master-bus {
-    background-color:darkgreen
+.module {
+    background-color: #646464;
+    border: solid #c4c4c4 0.25em;
+    margin: 10px;
 }
 
+/* Files Section */
+#files .container {
+    display: flex;
+}
+
+#files .loaded {
+    width: 100%;
+}
+
+.canvas-wrapper {
+    width: 98%;
+    margin: auto;
+}
+
+#waveform_canvas {
+    border: solid black 2px;
+}
 
 .tracklist {
     background-color: black;
@@ -27,9 +67,4 @@
 .controls {
     display: flex;
     flex-direction: column;
-}
-
-/* Files Section */
-#files .container {
-    display: flex;
 }

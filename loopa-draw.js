@@ -3,8 +3,14 @@ import { SelectWindow } from "./select-window.js";
 const DISPLAY_BACKGROUND = 'rgb(32, 32, 32)';
 const WAVEFORM_COLOR = 'rgb(0, 255, 0)';
 
-const waveformCanvas = document.getElementById("waveform_canvas");
-const _waveformCtx = waveformCanvas.getContext("2d");
+const _waveformCanvas = document.getElementById("waveform_canvas");
+_waveformCanvas.width = _waveformCanvas.parentElement.offsetWidth;
+const _waveformCtx = _waveformCanvas.getContext("2d");
+window.addEventListener('resize', function() {
+    _waveformCanvas.width = _waveformCanvas.parentElement.offsetWidth;
+    drawDisplay();
+});
+
 
 let _looper;
 
@@ -21,6 +27,7 @@ function createLooperSelectWindow(canvasCtx, top, bottom, width) {
 let _looperSelection = createLooperSelectWindow(_waveformCtx, 0, _waveformCtx.canvas.height, _waveformCtx.canvas.height);
 
 export function resetSelection() {
+    _looperSelection.unregister();
     _looperSelection = createLooperSelectWindow(_waveformCtx, 0, _waveformCtx.canvas.height, _waveformCtx.canvas.height);
 }
     

@@ -6,14 +6,22 @@
 		<title>Web Audio Basics</title>
 		<meta name="description" content="Audio basics demo for Web Audio API">
 		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+		<link rel="stylesheet" href="https://csstools.github.io/normalize.css/11.0.0/normalize.css">
 		<link rel="stylesheet" href="style.css">
+		<link rel="preconnect" href="https://fonts.googleapis.com">
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+		<link href="https://fonts.googleapis.com/css2?family=Major+Mono+Display&family=Nova+Mono&family=Palette+Mosaic&family=Wallpoet&display=swap" rel="stylesheet">
+		<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Teko:wght@300;500&family=Ubuntu+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+
 	</head>
 	<body>
 
 		<main>
 			<div id="loopa-ranger">
 		
-				<div id="files">
+				<div id="files" class="module">
 					<h3>Files</h3>
 					<div class="container">
 						<div class="load" style="background-color: aqua;">
@@ -50,21 +58,15 @@
 					</div>
 				</div>
 
-				<div id="looper" class="looper">
+				<div id="looper" class="module">
 					<h3>LoopCutter</h3>
-					<section class="files">
-						<button class="file-load">
-							<span>Load</span>
-						</button>
-					</section>
 
 					<section class="display">
-						<canvas id="waveform_canvas" width="1024" height="256"></canvas>
-						<button class="add-track">
-							<span>Add Track</span>
-						</button>
+						<div class="canvas-wrapper">
+							<canvas id="waveform_canvas" width="1024" height="256"></canvas>
+						</div>
 					</section>
-
+					
 					<section class="controls">
 						<section class="transport">
 							<button data-playing="false" class="transport-play" role="switch" aria-checked="false">
@@ -73,13 +75,16 @@
 							
 							<input type="range" id="playback-speed" class="slider playback-speed" min="0" max="5" value="1.0" step="0.01" data-action="playback-speed" />
 							<label for="playback-speed">Playback Speed</label>
-
+							
+							<button class="add-track">
+								<span>Add Track</span>
+							</button>
 						</section>
 					</section>
 					
 				</div>
 				
-				<div id="ranger">
+				<div id="ranger" class="module">
 					<h3>Ranger</h3>
 					<section class="tracklist">
 					</section>
@@ -90,7 +95,7 @@
 					</section>
 				</div>
 				
-				<div id="master-bus">
+				<div id="master-bus" class="module">
 					<h3>Master Bus</h3>
 					<h4>Channels</h4>
 					<section class="channels">
@@ -108,6 +113,8 @@
 			</div>
 		</main>
 
+		<!-- <script src="https://unpkg.com/@reactivex/rxjs@6.6.7/dist/global/rxjs.umd.js"></script> -->
+		<!-- <script src="https://unpkg.com/rxjs@7.4.0/dist/bundles/rxjs.umd.js"></script> -->
 		<script type="module" src="loopa-ranger.js"></script>
 	</body>
 </html>
