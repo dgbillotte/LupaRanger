@@ -1,0 +1,320 @@
+{
+    "extension": "linecounter",
+    "version": "0.2.7",
+    "workspace": "/Users/daniel/projects/galv/trainings/webaudio1",
+    "linecount": [
+        {
+            "version": "0.2.7",
+            "counttime": "2021-12-20 18:33:26",
+            "filesum": 41,
+            "codesum": 1503,
+            "commentsum": 238,
+            "blanksum": 390,
+            "statistics": {
+                ".html": {
+                    "code": 345,
+                    "comment": 5,
+                    "blank": 67
+                },
+                ".js": {
+                    "code": 1037,
+                    "comment": 218,
+                    "blank": 286
+                },
+                ".css": {
+                    "code": 77,
+                    "comment": 15,
+                    "blank": 20
+                },
+                ".yml": {
+                    "code": 12,
+                    "comment": 0,
+                    "blank": 2
+                },
+                "": {
+                    "code": 3,
+                    "comment": 0,
+                    "blank": 1
+                },
+                ".txt": {
+                    "code": 1,
+                    "comment": 0,
+                    "blank": 0
+                },
+                ".md": {
+                    "code": 2,
+                    "comment": 0,
+                    "blank": 11
+                },
+                ".py": {
+                    "code": 26,
+                    "comment": 0,
+                    "blank": 3
+                }
+            },
+            "filelist": [
+                {
+                    "blank": 1,
+                    "code": 3,
+                    "comment": 0,
+                    "filename": ".gitignore"
+                },
+                {
+                    "blank": 2,
+                    "code": 12,
+                    "comment": 0,
+                    "filename": ".gitlab-ci.yml"
+                },
+                {
+                    "filename": "audio/animals.mp3",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "audio/bari1.wav",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "audio/bari2.wav",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "audio/chirp-2secs.wav",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "audio/dope-drum-loop_C_major.wav",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "audio/dungeons.wav",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "audio/husky.wav",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "audio/loopy.wav",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "audio/noise-half-sec.wav",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "audio/outfoxing.mp3",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "audio/sharks1.wav",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "audio/stream.wav",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "audio/talking.wav",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "audio/water-pouring.wav",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "audio/waves.wav",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "blank": 35,
+                    "code": 92,
+                    "comment": 32,
+                    "filename": "bus.js"
+                },
+                {
+                    "blank": 50,
+                    "code": 152,
+                    "comment": 12,
+                    "filename": "draw.js"
+                },
+                {
+                    "blank": 13,
+                    "code": 62,
+                    "comment": 0,
+                    "filename": "examples/basics1.html"
+                },
+                {
+                    "blank": 12,
+                    "code": 67,
+                    "comment": 0,
+                    "filename": "examples/basics2.html"
+                },
+                {
+                    "blank": 5,
+                    "code": 4,
+                    "comment": 0,
+                    "filename": "examples/examples.js"
+                },
+                {
+                    "blank": 0,
+                    "code": 5,
+                    "comment": 0,
+                    "filename": "helpers.js"
+                },
+                {
+                    "blank": 18,
+                    "code": 43,
+                    "comment": 2,
+                    "filename": "index-first-looper.html"
+                },
+                {
+                    "blank": 7,
+                    "code": 42,
+                    "comment": 0,
+                    "filename": "index.html"
+                },
+                {
+                    "blank": 22,
+                    "code": 57,
+                    "comment": 1,
+                    "filename": "loopa-draw.js"
+                },
+                {
+                    "blank": 16,
+                    "code": 115,
+                    "comment": 2,
+                    "filename": "loopa-ranger.html"
+                },
+                {
+                    "blank": 40,
+                    "code": 99,
+                    "comment": 72,
+                    "filename": "loopa-ranger.js"
+                },
+                {
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0,
+                    "filename": "looper-ui.js"
+                },
+                {
+                    "blank": 24,
+                    "code": 103,
+                    "comment": 46,
+                    "filename": "looper.js"
+                },
+                {
+                    "blank": 23,
+                    "code": 98,
+                    "comment": 2,
+                    "filename": "looperUI.js"
+                },
+                {
+                    "blank": 29,
+                    "code": 102,
+                    "comment": 39,
+                    "filename": "main.js"
+                },
+                {
+                    "blank": 0,
+                    "code": 1,
+                    "comment": 0,
+                    "filename": "public/foo.txt"
+                },
+                {
+                    "blank": 31,
+                    "code": 140,
+                    "comment": 4,
+                    "filename": "ranger.js"
+                },
+                {
+                    "blank": 11,
+                    "code": 2,
+                    "comment": 0,
+                    "filename": "README.md"
+                },
+                {
+                    "blank": 1,
+                    "code": 16,
+                    "comment": 1,
+                    "filename": "rxjs.html"
+                },
+                {
+                    "blank": 26,
+                    "code": 169,
+                    "comment": 1,
+                    "filename": "select-window.js"
+                },
+                {
+                    "blank": 5,
+                    "code": 22,
+                    "comment": 0,
+                    "filename": "show.css"
+                },
+                {
+                    "blank": 1,
+                    "code": 16,
+                    "comment": 9,
+                    "filename": "show.js"
+                },
+                {
+                    "blank": 15,
+                    "code": 55,
+                    "comment": 15,
+                    "filename": "style.css"
+                },
+                {
+                    "blank": 3,
+                    "code": 26,
+                    "comment": 0,
+                    "filename": "test.py"
+                }
+            ]
+        }
+    ]
+}

@@ -19,8 +19,8 @@ body {
 
 
 h3 {
-    background-color: #323232;
     color: orange;
+    background-color: #323232;
     /* color: white; */
     margin: 0;
     font-family: "Major Mono Display";
@@ -31,6 +31,21 @@ h3 {
     background-color: #646464;
     border: solid #c4c4c4 0.25em;
     margin: 10px;
+}
+
+.module .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    background-color: #323232;
+}
+
+.module-info {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    margin-left: 1em;
+    color: orange;
 }
 
 /* Files Section */

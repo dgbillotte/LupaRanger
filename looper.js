@@ -7,7 +7,12 @@ export class Looper {
     #loopEnd;
     #looper;
     #downstreamChain;
-    #playbackRate= 1.0;
+    #playbackRate = 1.0;
+    #playStartTime;
+    #playLastTime;
+    #pointerIdx;
+
+    #playStartSamples
     
     constructor(audioContext, downstreamChain) {
         this.#audioContext = audioContext;
@@ -27,9 +32,49 @@ export class Looper {
             loopEnd: this.#loopEnd,
             playbackRate: this.#playbackRate
         });
-        this.#looper.connect(this.#downstreamChain); 
+        this.#looper.connect(this.#downstreamChain);
+        this.#playStartTime = this.#playLastTime = this.#audioContext.currentTime;
+        this.#playStartSamples = Math.floor(this.#audioContext.currentTime * this.#primaryBuffer.sampleRate);
+        this.#pointerIdx = this.#loopStart;
                 
         this.#looper.start(0, this.#loopStart); // use the offset here to start at the right time
+    }
+    
+    stop() {
+        this.#looper.stop();
+        this.#looper.disconnect(this.#downstreamChain);
+        this.#looper = null;
+    }
+
+    playing() {
+        return Boolean(this.#looper);
+    }
+    
+    reset() {
+        if(this.#looper) {
+            this.stop();
+            this.play();
+        }
+    }
+
+    currentSampleIndex() {
+        const nowSamples = Math.floor(this.#audioContext.currentTime * this.#primaryBuffer.sampleRate);
+        const samplesSinceStart = nowSamples - this.#playStartSamples;
+        const loopStartSamples = this.#loopStart * this.#primaryBuffer.sampleRate;
+        const clipLengthSamples = Math.floor((this.#loopEnd * this.#primaryBuffer.sampleRate) - loopStartSamples);
+        return loopStartSamples + samplesSinceStart % clipLengthSamples;
+    }
+
+    get bufferInfo() {
+        return {
+            samples: this.#primaryBuffer.length,
+            duration: this.#primaryBuffer.duration,
+            sampleRate: this.#primaryBuffer.sampleRate,
+            playbackRate: this.#playbackRate,
+            loopStart: this.#loopStart,
+            loopEnd: this.#loopEnd,
+            currentSample: this.currentSampleIndex()
+        };
     }
 
     cloneLoop() {
@@ -48,23 +93,10 @@ export class Looper {
             playbackRate: this.#playbackRate            
         };
     }
-    
-    stop() {
-        this.#looper.stop();
-        this.#looper.disconnect(this.#downstreamChain);
-        this.#looper = null;
-    }
-    
-    reset() {
-        if(this.#looper) {
-            this.stop();
-            this.play();
-        }
-    }
-    
+
     reClip(start, end, width) {
-        this.#loopStart = (start * 1.0 * this.#primaryBuffer.length / width) / 44100.0;
-        this.#loopEnd = (end * 1.0 * this.#primaryBuffer.length / width) / 44100.0;
+        this.#loopStart = (start * 1.0 * this.#primaryBuffer.length / width) / this.#primaryBuffer.sampleRate;
+        this.#loopEnd = (end * 1.0 * this.#primaryBuffer.length / width) / this.#primaryBuffer.sampleRate;
         if(this.#looper) {
             this.#looper.loopStart = this.#loopStart;
             this.#looper.loopEnd = this.#loopEnd;
@@ -74,7 +106,7 @@ export class Looper {
     loadPrimaryBuffer(audioBuffer) {
         this.#primaryBuffer = audioBuffer;
         this.#loopStart = 0;
-        this.#loopEnd = audioBuffer.length - 1;
+        this.#loopEnd = audioBuffer.duration;
     }
 
     playbackRate(playbackRate=1.0) {
@@ -83,12 +115,6 @@ export class Looper {
     }
 
     get primaryBufferData() {
-        let audioData = new Float32Array(this.#primaryBuffer.length);
-        this.#primaryBuffer.copyFromChannel(audioData, 0);
-        return audioData;
-    }
-
-    get primaryBufferData2() {
         return this.#primaryBuffer.getChannelData(0);
     }
     

@@ -59,7 +59,20 @@
 				</div>
 
 				<div id="looper" class="module">
-					<h3>LoopCutter</h3>
+					<div class="header">
+						<h3>LoopCutter</h3>
+						<div class="module-info">
+							<div class="length">
+								Source Length: <span class="samples">--</span> / <span class="seconds">--</span> secs.
+							</div>
+							<div class="select-start">
+								Select Start: <span class="samples">--</span> / <span class="seconds">--</span> secs.
+							</div>
+							<div class="select-length">
+								Select Length: <span class="samples">--</span> / <span class="seconds">--</span> secs.
+							</div>
+						</div>
+					</div>
 
 					<section class="display">
 						<div class="canvas-wrapper">
@@ -69,16 +82,16 @@
 					
 					<section class="controls">
 						<section class="transport">
-							<button data-playing="false" class="transport-play" role="switch" aria-checked="false">
-								<span>Play/Pause</span>
-							</button>
+							<button data-playing="false" class="transport-play"><span>Play/Pause</span></button>
 							
-							<input type="range" id="playback-speed" class="slider playback-speed" min="0" max="5" value="1.0" step="0.01" data-action="playback-speed" />
+							<input type="range" id="playback-speed" class="slider playback-speed" min="0" max="5" value="1.0" step="0.01" />
 							<label for="playback-speed">Playback Speed</label>
+						</section>
+						<section class="clip-info">
 							
-							<button class="add-track">
-								<span>Add Track</span>
-							</button>
+						</section>
+						<section class="export">
+							<button class="add-track"><span>Add Track</span></button>
 						</section>
 					</section>
 					

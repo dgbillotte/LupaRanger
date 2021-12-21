@@ -41,19 +41,18 @@ const audioSrc = 'audio/dungeons.wav'
 // const audioSrc = 'audio/chirp-2secs.wav'
 // const audioSrc = 'audio/bari1.wav'
    
-import {drawDisplay, initDraw, resetSelection } from "./loopa-draw.js";
 import {Looper} from "./looper.js"
+import {LooperUI} from "./looperUI.js"
 import {Ranger, Track} from "./ranger.js"
 import {SystemBus} from "./bus.js"
 
 // Audio / looper variables
 let _audioCtx;
 let _superLooper;
+let _looperUI;
 let _ranger;
 let _bus;
 const _sourceBuffers = [];
-
-  
 
 
 // Local file loader 
@@ -95,8 +94,13 @@ function init() {
   // setup the looper
   const looperBusConnection = _bus.addChannel("Loop Cutter");
   _superLooper = new Looper(_audioCtx, looperBusConnection);
-  initDraw(_superLooper);
-  
+  // initDraw(_superLooper);
+
+  // setup the looper UI
+  const canvasCtx = document.getElementById("waveform_canvas").getContext('2d');
+  const looperHtmlRoot = document.getElementById('looper');
+  _looperUI = new LooperUI(looperHtmlRoot, _superLooper);
+
   
   // setup the arranger
   const rangerBusConnection = _bus.addChannel("Ranger");
@@ -109,18 +113,18 @@ function init() {
 
 // Button to toggle Looper Play/Pause
 document.querySelector('#looper .transport-play').addEventListener('click', function() {
-    if(! _audioCtx) {
-        return; 
-	}
+  if(! _audioCtx) {
+    return; 
+  }
+  
+  if (this.dataset.playing === 'false') {
+    this.dataset.playing = 'true';
+    _looperUI.play();
     
-	if (this.dataset.playing === 'false') {
-        this.dataset.playing = 'true';
-        _superLooper.play();
-        
-	} else if (this.dataset.playing === 'true') {
-		this.dataset.playing = 'false';
-        _superLooper.stop();
-	}
+  } else if (this.dataset.playing === 'true') {
+    this.dataset.playing = 'false';
+    _looperUI.stop();
+  }
 });
 
 // Button to add current loop as a track in ranger
@@ -135,14 +139,14 @@ document.querySelector('#ranger .transport-play').addEventListener('click', func
       return; 
   }
     
-	if (this.dataset.playing === 'false') {
+  if (this.dataset.playing === 'false') {
         this.dataset.playing = 'true';
         _ranger.play();
         
-	} else if (this.dataset.playing === 'true') {
-		this.dataset.playing = 'false';
+  } else if (this.dataset.playing === 'true') {
+    this.dataset.playing = 'false';
         _ranger.stop();
-	}
+  }
 });
 
 
@@ -160,10 +164,8 @@ function blobOrError(response) {
 function loadBuffer(buffer, name) {
   _audioCtx.decodeAudioData(buffer)
   .then(function(audioBuffer) {
-    _superLooper.loadPrimaryBuffer(audioBuffer);
     addSourceFile(audioBuffer, name);
-    resetSelection();
-    drawDisplay();
+    _looperUI.loadPrimaryBuffer(audioBuffer);
   });  
 }
 
@@ -182,23 +184,3 @@ function addSourceFile(buffer, name) {
   loadedFiles.appendChild(tmp.firstChild);
 }
 
-
-// function fetchLooperFile(url, resolve) {
-//     return fetch(url)
-//     .then(function(response) {
-//       if (!response.ok) {
-//         throw new Error(`HTTP error! status: ${response.status}`);
-//       }
-//       return response.blob();
-//     })
-//     .then(function(blob) {
-//         return blob.arrayBuffer().then(function(audioData) {
-//             _audioCtx.decodeAudioData(audioData, resolve, onFileDecodeError);
-//         });
-//     });
-// }
-
-// function onFileDecodeError (e) {
-//     console.log('Error decoding buffer: ' + e.message);
-//     console.log(e);
-// }    

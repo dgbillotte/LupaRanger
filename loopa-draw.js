@@ -24,11 +24,11 @@ function createLooperSelectWindow(canvasCtx, top, bottom, width) {
 }
 
 
-let _looperSelection = createLooperSelectWindow(_waveformCtx, 0, _waveformCtx.canvas.height, _waveformCtx.canvas.height);
+let _looperSelection = createLooperSelectWindow(_waveformCtx, 0, _waveformCtx.canvas.height, _waveformCtx.canvas.width);
 
 export function resetSelection() {
     _looperSelection.unregister();
-    _looperSelection = createLooperSelectWindow(_waveformCtx, 0, _waveformCtx.canvas.height, _waveformCtx.canvas.height);
+    _looperSelection = createLooperSelectWindow(_waveformCtx, 0, _waveformCtx.canvas.height, _waveformCtx.canvas.width);
 }
     
 
@@ -39,7 +39,13 @@ export function initDraw(looper) {
 
 //------------------ Draw Functions -----------------------
 
- 
+export function drawDisplay() {
+    drawWaveform(_waveformCtx, _looper.primaryBufferData);
+    if(_looperSelection) {
+        _looperSelection.draw();
+    }
+}
+
 function drawWaveform(canvasCtx, waveData) {
     const width = canvasCtx.canvas.width;
     const height = canvasCtx.canvas.height;
@@ -71,13 +77,4 @@ function drawWaveform(canvasCtx, waveData) {
     canvasCtx.lineTo(width, height/2);
     canvasCtx.stroke();
 }
-
-
-export function drawDisplay() {
-    drawWaveform(_waveformCtx, _looper.primaryBufferData2);
-    if(_looperSelection) {
-        _looperSelection.draw();
-    }
-}
-
 
