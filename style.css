@@ -3,28 +3,20 @@ font-family: 'Major Mono Display', monospace;
 font-family: 'Wallpoet', cursive;
 font-family: 'Nova Mono', monospace;
 font-family: 'Palette Mosaic', cursive;
-*/
 
-
-/* 
 font-family: 'Share Tech Mono', monospace;
 font-family: 'Teko', sans-serif;
 font-family: 'Ubuntu Mono', monospace;
 */
 body {
     background-color: black;
+    color: #dadada;
     /* font-family: 'Teko'; */
     font-family: 'Share Tech Mono';
 }
 
-
-h3 {
-    color: orange;
-    background-color: #323232;
-    /* color: white; */
-    margin: 0;
-    font-family: "Major Mono Display";
-    /* font-family: "Wallpoet"; */
+th {
+    text-align: left;
 }
 
 .module {
@@ -33,11 +25,27 @@ h3 {
     margin: 10px;
 }
 
-.module .header {
+.module header {
     display: flex;
     justify-content: space-between;
     align-items: baseline;
+    padding-left: 1em;
+    padding-right: 1em;
     background-color: #323232;
+}
+
+.module section {
+    padding-left: 1em;
+    padding-right: 1em;
+}
+
+.module h3 {
+    color: orange;
+    background-color: #323232;
+    /* color: white; */
+    margin: 0;
+    font-family: "Major Mono Display";
+    /* font-family: "Wallpoet"; */
 }
 
 .module-info {
@@ -53,12 +61,20 @@ h3 {
     display: flex;
 }
 
+#files .load p {
+    margin:0;
+}
+
 #files .loaded {
     width: 100%;
 }
 
+#files .loaded table {
+    width: 100%;
+}
+
 .canvas-wrapper {
-    width: 98%;
+    width: 100%;
     margin: auto;
 }
 

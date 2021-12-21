@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script>
+        navigator.mediaDevices.enumerateDevices()
+            .then(function(devices) {
+                for(let device of devices) {
+                    if(device.kind == 'audioinput')
+                    console.log(device.label, device.deviceId);
+                }
+            });
+
+        // to get a MediaStream which can be used with a mediaSource/DestinationNode
+        navigator.mediaDevices.getUserMedia({
+            audio:{deviceId: 'DEVICE_ID'}
+        }).then(function(thing){ return that = thing; });
+
+    </script>
+</head>
+<body>
+    
+</body>
+</html>

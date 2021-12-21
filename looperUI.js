@@ -21,6 +21,12 @@ export class LooperUI {
         this.#looper = looper;
         this.#canvas.width = this.#canvas.parentElement.offsetWidth;
         this.#selection = new SelectWindow(this.#canvasCtx, 0, this.#canvas.height, this.#canvas.width, this.reclipHandler.bind(this));
+        window.addEventListener('resize', this.#resize.bind(this));
+    }
+
+    #resize() {
+        this.#canvas.width = this.#canvas.parentElement.offsetWidth;
+        this.draw();
     }
 
     reclipHandler(start, end) {

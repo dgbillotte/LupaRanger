@@ -26,7 +26,73 @@ Features:
 - Audio Library
 - Upload audio file
 - Add an effect or two
-- Stretch: Enable reverse play 
+- Stretch: Enable reverse play
+
+-------------------------------------------------------------------------------
+----------------------------- Current Modules ---------------------------------
+
+StockPile:
+Features:
+- reload in LoopCutter
+- delete from session
+
+Looper/Cutter:
+Bugs:
+- select window can go before/after the the source
+Features:
+- zoom
+
+Ranger:
+Bugs:
+- segments can run before or after the track window, is this ok?
+Features:
+- snap segment length to multiples or fractions of clip-length
+- allow segments to be pitch controlled, either at start or continuously
+- allow segments to wander in an arrangement, so if looped, it will continue to move
+
+Master Bus:
+Bugs:
+Features:
+- add per-channel effects
+
+-------------------------------------------------------------------------------
+----------------------------- ToBeDeveloped... --------------------------------
+Players:
+- MIDI controllers
+- comp keyboard
+- random/chaos
+- quantizer
+
+Clock:
+- poly rhythms
+- tidal clock
+
+Step Sequencer:
+- clips as instruments
+- allow for different length tracks
+
+Tidal Sequencer:
+- clips as instruments
+- tidal patterns
+
+Loop Stitcher
+- types:
+  - forward/backward/ping-pong
+  - single
+
+Clip Shaper
+- Fine trim
+- Apply effect
+- Apply envelope
+- Adjust gain
+- pitch shift
+
+Input/Output
+- Mic/Line In
+- Audio Out
+- record to file
+- save/load session
+
 
 */
    
@@ -57,55 +123,55 @@ const _sourceBuffers = [];
 
 // Local file loader 
 document.getElementById('local-file').addEventListener('input', function(event) {
-  if(! _audioCtx) {
-    init();
-  }
+    if(! _audioCtx) {
+        init();
+    }
   
-  const file = event.target.files[0];
-  file.arrayBuffer()
-    .then((buffer) => loadBuffer(buffer, file.name));
+    const file = event.target.files[0];
+    file.arrayBuffer()
+        .then((buffer) => loadBuffer(buffer, file.name));
 });
 
 document.getElementById('predefined-files').addEventListener('input', function(event) {
-  if(! _audioCtx) {
-    init();
-  }
+    if(! _audioCtx) {
+        init();
+    }
   
-  const url = 'audio/' + event.target.value;;
-  fetch(url)
-  .then((response) => blobOrError(response))
-  .then((blob) => blob.arrayBuffer())
-  .then((buffer) => loadBuffer(buffer,  url));
+    const url = 'audio/' + event.target.value;;
+    fetch(url)
+    .then((response) => blobOrError(response))
+    .then((blob) => blob.arrayBuffer())
+    .then((buffer) => loadBuffer(buffer,  url));
 });
 
 
 
 function init() {
-  _audioCtx = new AudioContext();
-  if (_audioCtx.state === 'suspended') {
-    _audioCtx.resume();
-  }
-  
-  // Create the master bus
-  const busElement = document.getElementById('master-bus');
-  _bus = new SystemBus(_audioCtx, busElement);
+    _audioCtx = new AudioContext();
+    if (_audioCtx.state === 'suspended') {
+        _audioCtx.resume();
+    }
+    
+    // Create the master bus
+    const busElement = document.getElementById('master-bus');
+    _bus = new SystemBus(_audioCtx, busElement);
 
-  
-  // setup the looper
-  const looperBusConnection = _bus.addChannel("Loop Cutter");
-  _superLooper = new Looper(_audioCtx, looperBusConnection);
-  // initDraw(_superLooper);
+    
+    // setup the looper
+    const looperBusConnection = _bus.addChannel("Loop Cutter");
+    _superLooper = new Looper(_audioCtx, looperBusConnection);
+    // initDraw(_superLooper);
 
-  // setup the looper UI
-  const canvasCtx = document.getElementById("waveform_canvas").getContext('2d');
-  const looperHtmlRoot = document.getElementById('looper');
-  _looperUI = new LooperUI(looperHtmlRoot, _superLooper);
+    // setup the looper UI
+    const canvasCtx = document.getElementById("waveform_canvas").getContext('2d');
+    const looperHtmlRoot = document.getElementById('looper');
+    _looperUI = new LooperUI(looperHtmlRoot, _superLooper);
 
-  
-  // setup the arranger
-  const rangerBusConnection = _bus.addChannel("Ranger");
-  const rangerElement = document.querySelector('#ranger');
-  _ranger = new Ranger(_audioCtx, rangerElement, rangerBusConnection);
+    
+    // setup the arranger
+    const rangerBusConnection = _bus.addChannel("Ranger");
+    const rangerElement = document.querySelector('#ranger');
+    _ranger = new Ranger(_audioCtx, rangerElement, rangerBusConnection);
   
 }
 
@@ -113,40 +179,40 @@ function init() {
 
 // Button to toggle Looper Play/Pause
 document.querySelector('#looper .transport-play').addEventListener('click', function() {
-  if(! _audioCtx) {
-    return; 
-  }
-  
-  if (this.dataset.playing === 'false') {
-    this.dataset.playing = 'true';
-    _looperUI.play();
+    if(! _audioCtx) {
+        return; 
+    }
     
-  } else if (this.dataset.playing === 'true') {
-    this.dataset.playing = 'false';
-    _looperUI.stop();
-  }
+    if (this.dataset.playing === 'false') {
+        this.dataset.playing = 'true';
+        _looperUI.play();
+      
+    } else if (this.dataset.playing === 'true') {
+        this.dataset.playing = 'false';
+        _looperUI.stop();
+    }
 });
 
 // Button to add current loop as a track in ranger
 document.querySelector('.add-track').addEventListener('click', function() {
-    const loop = _superLooper.cloneLoop();
-    _ranger.createTrack(loop);
+      const loop = _superLooper.cloneLoop();
+      _ranger.createTrack(loop);
 });
 
 // Button to toggle Ranger Play/Pause
 document.querySelector('#ranger .transport-play').addEventListener('click', function() {
-  if(! _audioCtx) {
-      return; 
-  }
+    if(! _audioCtx) {
+        return; 
+    }
     
-  if (this.dataset.playing === 'false') {
+    if (this.dataset.playing === 'false') {
         this.dataset.playing = 'true';
         _ranger.play();
         
-  } else if (this.dataset.playing === 'true') {
-    this.dataset.playing = 'false';
-        _ranger.stop();
-  }
+    } else if (this.dataset.playing === 'true') {
+        this.dataset.playing = 'false';
+            _ranger.stop();
+    }
 });
 
 
@@ -155,32 +221,37 @@ document.querySelector('#ranger .transport-play').addEventListener('click', func
 
 
 function blobOrError(response) {
-  if(! response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
-  }
-  return response.blob();
+    if(! response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return response.blob();
 }
 
 function loadBuffer(buffer, name) {
-  _audioCtx.decodeAudioData(buffer)
-  .then(function(audioBuffer) {
-    addSourceFile(audioBuffer, name);
-    _looperUI.loadPrimaryBuffer(audioBuffer);
-  });  
+    _audioCtx.decodeAudioData(buffer)
+        .then(function(audioBuffer) {
+            addSourceFile(audioBuffer, name);
+            _looperUI.loadPrimaryBuffer(audioBuffer);
+    });  
 }
 
 function addSourceFile(buffer, name) {
-  _sourceBuffers.push({name: name, audioBuffer: buffer});
+    _sourceBuffers.push({name: name, audioBuffer: buffer});
 
-  const tmp = document.createElement('tbody');
-  tmp.innerHTML =
-    `<tr>
-      <td>${name}</td>
-      <td>${buffer.length}</td>
-      <td><button>Do Som.</button></td>
-    </tr>
-    `;
-  const loadedFiles = document.querySelector('#files .loaded tbody');
-  loadedFiles.appendChild(tmp.firstChild);
+    const tmp = document.createElement('tbody');
+    tmp.innerHTML =
+      `<tr>
+          <td>${name}</td>
+          <td>${buffer.length}</td>
+          <td>${buffer.duration.toFixed(3)}</td>
+          <td>${buffer.sampleRate}</td>
+          <td>
+              <button>Reload</button>
+              <button>Remove</button>
+          </td>
+      </tr>
+      `;
+    const loadedFiles = document.querySelector('#files .loaded tbody');
+    loadedFiles.appendChild(tmp.firstChild);
 }
 
