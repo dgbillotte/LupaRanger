@@ -147,26 +147,34 @@ export class SelectWindow {
     }
     
     createSelectionMouseMove(event) {
-        this.#clipSelection['end'] = event.offsetX <= this.#width ? event.offsetX : this.#width;
-        this.selectionChanged();
+        return this.editSelectionRightMouseMove(event);
     }
     
     editSelectionLeftMouseMove(event) {
-        this.#clipSelection['start'] = event.offsetX <= this.#width ? event.offsetX : this.#width;
-        this.selectionChanged();
+        const mousePos = event.offsetX;
+        if(mousePos >= 0 && mousePos <= this.#width ) {
+            this.#clipSelection['start'] = mousePos;
+            this.selectionChanged();
+        }
     }
     
     editSelectionRightMouseMove(event) {
-        this.#clipSelection['end'] = event.offsetX <= this.#width ? event.offsetX : this.#width;
-        this.selectionChanged();
+        const mousePos = event.offsetX;
+        if(mousePos >= 0 && mousePos <= this.#width ) {
+            this.#clipSelection['end'] = mousePos;
+            this.selectionChanged();
+        }
     }
     
     slideSelectionMouseMove(event) {
-        let delta = event.offsetX - this.#mouseSlideX;
-        this.#mouseSlideX = event.offsetX;
-        this.#clipSelection['start'] += delta;
-        this.#clipSelection['end'] += delta;
-        this.selectionChanged();
+        const mousePos = event.offsetX;
+        let delta = mousePos - this.#mouseSlideX;
+        if(this.#clipSelection['start'] + delta >= 0 && this.#clipSelection['end'] + delta <= this.#width) {
+            this.#mouseSlideX = mousePos;
+            this.#clipSelection['start'] += delta;
+            this.#clipSelection['end'] += delta;
+            this.selectionChanged();
+        }
     }
 
     inLeftHandle(x,y) {
@@ -193,4 +201,8 @@ export class SelectWindow {
             && y >= this.#top && y < this.#bottom)
             || this.inLeftHandle(x,y) || this.inRightHandle(x,y);
     }
+
+    get width() { return this.#width; }
+    get clipSelection() { return this.#clipSelection; }
 }
+

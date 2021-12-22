@@ -95,7 +95,13 @@ th {
     border: groove #ff9800 1px;
 }
 
-.controls {
+#looper .controls {
+    display: flex;
+    justify-content: space-between;
+    /* flex-direction: column; */
+}
+
+#ranger .controls {
     display: flex;
     flex-direction: column;
 }

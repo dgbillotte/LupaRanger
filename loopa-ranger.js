@@ -24,7 +24,6 @@ Features:
 - Add controls:
 - track gain / x mute
 - Audio Library
-- Upload audio file
 - Add an effect or two
 - Stretch: Enable reverse play
 
@@ -38,7 +37,6 @@ Features:
 
 Looper/Cutter:
 Bugs:
-- select window can go before/after the the source
 Features:
 - zoom
 
@@ -46,9 +44,9 @@ Ranger:
 Bugs:
 - segments can run before or after the track window, is this ok?
 Features:
-- snap segment length to multiples or fractions of clip-length
 - allow segments to be pitch controlled, either at start or continuously
 - allow segments to wander in an arrangement, so if looped, it will continue to move
+- snap segment length to multiples or fractions of clip-length 
 
 Master Bus:
 Bugs:
