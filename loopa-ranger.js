@@ -137,9 +137,9 @@ document.getElementById('predefined-files').addEventListener('input', function(e
   
     const url = 'audio/' + event.target.value;;
     fetch(url)
-    .then((response) => blobOrError(response))
-    .then((blob) => blob.arrayBuffer())
-    .then((buffer) => loadBuffer(buffer,  url));
+        .then((response) => blobOrError(response))
+        .then((blob) => blob.arrayBuffer())
+        .then((buffer) => loadBuffer(buffer,  url));
 });
 
 
@@ -209,7 +209,7 @@ document.querySelector('#ranger .transport-play').addEventListener('click', func
         
     } else if (this.dataset.playing === 'true') {
         this.dataset.playing = 'false';
-            _ranger.stop();
+        _ranger.stop();
     }
 });
 
@@ -238,17 +238,17 @@ function addSourceFile(buffer, name) {
 
     const tmp = document.createElement('tbody');
     tmp.innerHTML =
-      `<tr>
-          <td>${name}</td>
-          <td>${buffer.length}</td>
-          <td>${buffer.duration.toFixed(3)}</td>
-          <td>${buffer.sampleRate}</td>
-          <td>
-              <button>Reload</button>
-              <button>Remove</button>
-          </td>
-      </tr>
-      `;
+        `<tr>
+            <td>${name}</td>
+            <td>${buffer.length}</td>
+            <td>${buffer.duration.toFixed(3)}</td>
+            <td>${buffer.sampleRate}</td>
+            <td>
+                <button>Reload</button>
+                <button>Remove</button>
+            </td>
+        </tr>
+        `;
     const loadedFiles = document.querySelector('#files .loaded tbody');
     loadedFiles.appendChild(tmp.firstChild);
 }

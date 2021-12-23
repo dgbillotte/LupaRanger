@@ -1,4 +1,4 @@
-
+import { Clip } from './ranger.js';
 
 export class Looper {
     #audioContext;
@@ -88,10 +88,7 @@ export class Looper {
             sampleRate: sampleRate,
         });
         clippedBuffer.copyToChannel(f32Buf, 0);
-        return {
-            buffer: clippedBuffer,
-            playbackRate: this.#playbackRate            
-        };
+        return new Clip(clippedBuffer, this.#playbackRate);
     }
 
     reClip(start, end, width) {

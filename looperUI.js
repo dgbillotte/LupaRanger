@@ -1,4 +1,5 @@
 import { SelectWindow } from "./select-window.js";
+import { WaveformView } from "./waveformView.js";
 
 const DISPLAY_BACKGROUND = 'rgb(32, 32, 32)';
 const WAVEFORM_COLOR = 'rgb(0, 255, 0)';
@@ -9,6 +10,7 @@ export class LooperUI {
     #canvas
     #canvasCtx
     #looper
+    #waveformView
     #selection
     // #selectionOn = false;
     #selectionOn = true;
@@ -17,9 +19,10 @@ export class LooperUI {
     constructor(htmlRoot, looper) {
         this.#htmlRoot = htmlRoot;
         this.#canvas = htmlRoot.querySelector('#waveform_canvas');
+        this.#canvas.width = this.#canvas.parentElement.offsetWidth;
         this.#canvasCtx = this.#canvas.getContext('2d');
         this.#looper = looper;
-        this.#canvas.width = this.#canvas.parentElement.offsetWidth;
+        this.#waveformView = new WaveformView(this.#canvasCtx, DISPLAY_BACKGROUND, WAVEFORM_COLOR);
         this.#selection = new SelectWindow(this.#canvasCtx, 0, this.#canvas.height, this.#canvas.width, this.reclipHandler.bind(this));
         window.addEventListener('resize', this.#resize.bind(this));
     }
@@ -31,7 +34,6 @@ export class LooperUI {
 
     reclipHandler(start, end) {
         this.#looper.reClip(start, end, this.#canvasCtx.canvas.width);
-        // this.setClipInfo();
         this.setLooperHeader();
         this.draw();
     }
@@ -74,7 +76,7 @@ export class LooperUI {
     // }
 
     draw() {
-        this.drawWaveform(this.#looper.primaryBufferData);
+        this.#waveformView.draw(this.#looper.primaryBufferData);
         if(this.#selectionOn) {
             this.#selection.draw();
         }
@@ -103,39 +105,39 @@ export class LooperUI {
         this.#canvasCtx.stroke();
     }
 
-    set selectionOn(on) {
-        this.#selectionOn = on;
-    }
+    // set selectionOn(on) {
+    //     this.#selectionOn = on;
+    // }
 
-    drawWaveform(waveData) {
-        const width = this.#canvasCtx.canvas.width;
-        const height = this.#canvasCtx.canvas.height;
-        this.#canvasCtx.clearRect(0, 0, width, height);
+    // drawWaveform(waveData) {
+    //     const width = this.#canvasCtx.canvas.width;
+    //     const height = this.#canvasCtx.canvas.height;
+    //     this.#canvasCtx.clearRect(0, 0, width, height);
         
-        this.#canvasCtx.fillStyle = DISPLAY_BACKGROUND;  
-        this.#canvasCtx.fillRect(0, 0, width, height);
+    //     this.#canvasCtx.fillStyle = DISPLAY_BACKGROUND;  
+    //     this.#canvasCtx.fillRect(0, 0, width, height);
         
-        this.#canvasCtx.lineWidth = 1;
-        this.#canvasCtx.strokeStyle = WAVEFORM_COLOR;
-        this.#canvasCtx.beginPath();
+    //     this.#canvasCtx.lineWidth = 1;
+    //     this.#canvasCtx.strokeStyle = WAVEFORM_COLOR;
+    //     this.#canvasCtx.beginPath();
         
-        const sliceWidth = width * 1.0 / waveData.length;
-        let x = 0;
+    //     const sliceWidth = width * 1.0 / waveData.length;
+    //     let x = 0;
         
-        const center = height / 2;
-        for(let i = 0; i < waveData.length; i++) {
-            const y = center + (waveData[i] * center);
+    //     const center = height / 2;
+    //     for(let i = 0; i < waveData.length; i++) {
+    //         const y = center + (waveData[i] * center);
             
-            if(i === 0) {
-                this.#canvasCtx.moveTo(x, y);
-            } else {
-                this.#canvasCtx.lineTo(x, y);
-            }
+    //         if(i === 0) {
+    //             this.#canvasCtx.moveTo(x, y);
+    //         } else {
+    //             this.#canvasCtx.lineTo(x, y);
+    //         }
             
-            x += sliceWidth;
-        }
+    //         x += sliceWidth;
+    //     }
         
-        this.#canvasCtx.lineTo(width, height/2);
-        this.#canvasCtx.stroke();
-    }
+    //     this.#canvasCtx.lineTo(width, height/2);
+    //     this.#canvasCtx.stroke();
+    // }
 }

@@ -1,5 +1,18 @@
 import { SelectWindow} from "./select-window.js";
 
+export class Clip {
+    #audioBuffer
+    #playbackRate
+
+    constructor(audioBuffer, playbackRate=1) {
+        this.#audioBuffer = audioBuffer;
+        this.#playbackRate = playbackRate;
+    }
+
+    get buffer() { return this.#audioBuffer; }
+    get playbackRate() { return this.#playbackRate; }
+}
+
 export class Track {
     #ranger;
     #canvasCtx;
