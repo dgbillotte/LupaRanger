@@ -9,32 +9,23 @@ export class ADSRWidget {
     #sustain;
     #release;
     #envelope = null;
+    #mouseDown = null;
+    #mouseMoveHandler = null;
+    #onEnvelopeChange;
 
-    constructor(canvasCtx) {
+
+    constructor(canvasCtx, onEnvelopeChange=null) {
         this.#canvasCtx = canvasCtx;
+        this.#onEnvelopeChange = onEnvelopeChange;
         this.#attack = this.#decay = this.#release = this.#canvasCtx.canvas.width * 0.1;
         this.#sustain = this.#canvasCtx.canvas.height / 2;
+        this.#wireUpHandlers();
+
     }
 
     #wireUpHandlers() {
-        const canvas = this.#canvasCtx.canvas;
-        canvas.querySelector('button.adsr', function() {
-            if(this.#envelope == 'adsr') {
-                this.#envelope = null;
-            } else {
-                this.#envelope = 'adsr';
-                draw();
-            }
-            draw();
-        }.bind(this));
-        // canvas.querySelector('button.ar', function() {
-        //     if(this.#envelope == 'ar') {
-        //         this.#envelope = null;
-        //     } else {
-        //         this.#envelope = 'adsr';
-        //         draw();
-        //     }
-        // }.bind(this));
+        this.#canvasCtx.canvas.addEventListener('mousedown', this.#mouseDownHandler.bind(this));
+        this.#canvasCtx.canvas.addEventListener('mouseup', this.#mouseUpHandler.bind(this));
     }
 
     set attack(attackPx) {
@@ -60,27 +51,77 @@ export class ADSRWidget {
     get attack() { return this.#attack; }
     get decay() { return this.#decay; }
     get release() { return this.#release; }
-    get sustain() { return this.#sustain * 1.0/this.#canvasCtx.canvas.height; }
+    get sustain() { return (this.#canvasCtx.canvas.height - this.#sustain) * 1.0/this.#canvasCtx.canvas.height; }
 
-    // getAttackScaled(clipDuration) {
-    //     return clipDuration * this.#attack / this.#canvasCtx.canvas.width;
-    // }
-    // getDecayScaled(clipDuration) {
-    //     return clipDuration * this.#decay / this.#canvasCtx.canvas.width;
-    // }
-    // getReleaseScaled(clipDuration) {
-    //     return clipDuration * this.#release / this.#canvasCtx.canvas.width;
-    // }
-    // getSustainScaled() {
-    //     return this.#sustain / this.#canvasCtx.canvas.width;
-    // }
+    #mouseDownHandler(event) {
+        let handler = null;
+        if(this.#inAttackHandler(event.offsetX, event.offsetY)) {
+            console.log('attack');
+            handler = this.#editAttackMouseMove;
+        } else if(this.#inDecayHandler(event.offsetX, event.offsetY)) {
+            console.log('decay');
+            handler = this.#editDecayMouseMove;
+        } else if(this.#inReleaseHandler(event.offsetX, event.offsetY)) {
+            console.log('release');
+            handler = this.#editReleaseMouseMove;
+        }
+
+        if(handler) {
+            this.#canvasCtx.canvas.removeEventListener('mousemove', this.#mouseMoveHandler);
+            this.#mouseMoveHandler = handler.bind(this);
+            this.#canvasCtx.canvas.addEventListener('mousemove', this.#mouseMoveHandler);
+        }
+
+        this.#mouseDown = {x: event.offsetX, y: event.offsetY};
+    }
+
+    #inAttackHandler(x,y) {
+        return (x >= (this.#attack - 5) && x <= (this.#attack + 5) && y <= 10);
+    }
+
+    #inDecayHandler(x,y) {
+        const decay = this.#attack + this.#decay;
+        return (x >= (decay - 5) && x <= (decay + 5) && y >= (this.#sustain -5) && y <= (this.#sustain + 5));
+    }
+
+    #inReleaseHandler(x,y) {
+        const release = this.#canvasCtx.canvas.width - this.#release;
+        return (x >= (release - 5) && x <= (release + 5) && y >= (this.#sustain -5) && y <= (this.#sustain + 5));
+    }
+
+    #envelopeChanged() {
+        if(this.#onEnvelopeChange) {
+            this.#onEnvelopeChange();
+        } else {
+            this.draw();
+        }
+    }
+
+    #editAttackMouseMove(event) {
+        this.#attack = event.offsetX;
+        this.#envelopeChanged();
+    }
+    #editDecayMouseMove(event) {
+        this.#decay = event.offsetX - this.#attack;
+        this.#sustain = event.offsetY;
+        this.#envelopeChanged();
+    }
+    #editReleaseMouseMove(event) {
+        this.#release = this.#canvasCtx.canvas.width - event.offsetX;
+        this.#sustain = event.offsetY;
+        this.#envelopeChanged();
+    }
+
+    #mouseUpHandler() {
+        this.#canvasCtx.canvas.removeEventListener('mousemove', this.#mouseMoveHandler);
+    }
 
     draw() {
         const width = this.#canvasCtx.canvas.width;
         const height = this.#canvasCtx.canvas.height;
         // const center = height/2;
 
-        const attack = {x:this.#attack, y:0};
+        const attack = {x:this.#attack, y:5};
         const decay = {x: this.#attack + this.#decay, y: this.#sustain};
         const release = {x: width - this.#release, y: this.#sustain};
         const ctx = this.#canvasCtx;

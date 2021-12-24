@@ -177,7 +177,7 @@ export class LoopShopUI {
             if(this.#envelope) {
                 this.#envelope = null;
             } else {
-                this.#envelope = new ADSRWidget(this.#canvasCtx);
+                this.#envelope = new ADSRWidget(this.#canvasCtx, this.draw.bind(this));
             }
             this.draw();
         }.bind(this));

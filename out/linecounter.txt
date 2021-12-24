@@ -63,3 +63,68 @@ show.js, code is 16, comment is 9, blank is 1.
 style.css, code is 55, comment is 15, blank is 15.
 test.py, code is 26, comment is 0, blank is 3.
 ===============================================================================
+===============================================================================
+EXTENSION NAME : linecounter
+EXTENSION VERSION : 0.2.7
+-------------------------------------------------------------------------------
+count time : 2021-12-24 01:46:43
+count workspace : /Users/daniel/projects/LupaRanger
+total files : 41
+total code lines : 1772
+total comment lines : 335
+total blank lines : 438
+
+    statistics
+   |      extension|     total code|  total comment|    total blank|percent|
+   -------------------------------------------------------------------------
+   |            .js|           1403|            313|            373|     79|
+   |          .html|            229|              3|             23|     13|
+   |               |              3|              0|              1|   0.17|
+   |           .yml|             12|              0|              2|   0.68|
+   |           .txt|              1|              0|              0|  0.056|
+   |           .css|             96|             19|             25|    5.4|
+   |            .md|              2|              0|             11|   0.11|
+   |            .py|             26|              0|              3|    1.5|
+   -------------------------------------------------------------------------
+.gitignore, code is 3, comment is 0, blank is 1.
+.gitlab-ci.yml, code is 12, comment is 0, blank is 2.
+adsrWidget.js, code is 123, comment is 1, blank is 24.
+audio-devices.html, code is 24, comment is 0, blank is 3.
+audio/animals.mp3, it is a binary file.
+audio/bari1.wav, it is a binary file.
+audio/bari2.wav, it is a binary file.
+audio/chirp-2secs.wav, it is a binary file.
+audio/dope-drum-loop_C_major.wav, it is a binary file.
+audio/dungeons.wav, it is a binary file.
+audio/husky.wav, it is a binary file.
+audio/loopy.wav, it is a binary file.
+audio/noise-half-sec.wav, it is a binary file.
+audio/outfoxing.mp3, it is a binary file.
+audio/sharks1.wav, it is a binary file.
+audio/stream.wav, it is a binary file.
+audio/talking.wav, it is a binary file.
+audio/water-pouring.wav, it is a binary file.
+audio/waves.wav, it is a binary file.
+bus.js, code is 92, comment is 32, blank is 35.
+draw.js, code is 152, comment is 12, blank is 50.
+dustbin.js, code is 36, comment is 19, blank is 7.
+helpers.js, code is 5, comment is 0, blank is 0.
+index.html, code is 42, comment is 0, blank is 7.
+loopa-draw.js, code is 57, comment is 1, blank is 22.
+loopa-ranger.html, code is 147, comment is 2, blank is 12.
+loopa-ranger.js, code is 115, comment is 117, blank is 39.
+looper.js, code is 95, comment is 31, blank is 24.
+looperUI.js, code is 87, comment is 35, blank is 27.
+loopshop.js, code is 148, comment is 10, blank is 37.
+main.js, code is 102, comment is 39, blank is 29.
+public/foo.txt, code is 1, comment is 0, blank is 0.
+ranger.js, code is 162, comment is 3, blank is 36.
+README.md, code is 2, comment is 0, blank is 11.
+rxjs.html, code is 16, comment is 1, blank is 1.
+select-window.js, code is 177, comment is 1, blank is 28.
+show.css, code is 22, comment is 0, blank is 5.
+show.js, code is 16, comment is 9, blank is 1.
+style.css, code is 74, comment is 19, blank is 20.
+test.py, code is 26, comment is 0, blank is 3.
+waveformView.js, code is 36, comment is 3, blank is 14.
+===============================================================================

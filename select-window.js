@@ -103,7 +103,6 @@ export class SelectWindow {
     }
 
     mouseDownHandler(event) {
-        console.log("select-window mousedown");
         let handler;
         if(this.#clipSelection.start !== this.#clipSelection.end) {
             if(this.inLeftHandle(event.offsetX, event.offsetY)) {
@@ -143,7 +142,6 @@ export class SelectWindow {
             [this.#clipSelection.start, this.#clipSelection.end] = [this.#clipSelection.end, this.#clipSelection.start];
         }
         this.selectionChanged();
-        console.log("mouse up fired");
     }
     
     createSelectionMouseMove(event) {
