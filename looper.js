@@ -1,4 +1,4 @@
-import { Clip } from './ranger.js';
+import { Loop } from './ranger.js';
 
 export class Looper {
     #audioContext;
@@ -8,9 +8,6 @@ export class Looper {
     #looper;
     #downstreamChain;
     #playbackRate = 1.0;
-    #playStartTime;
-    #playLastTime;
-    #pointerIdx;
 
     #playStartSamples
     
@@ -33,10 +30,7 @@ export class Looper {
             playbackRate: this.#playbackRate
         });
         this.#looper.connect(this.#downstreamChain);
-        this.#playStartTime = this.#playLastTime = this.#audioContext.currentTime;
-        this.#playStartSamples = Math.floor(this.#audioContext.currentTime * this.#primaryBuffer.sampleRate);
-        this.#pointerIdx = this.#loopStart;
-                
+        this.#playStartSamples = Math.floor(this.#audioContext.currentTime * this.#primaryBuffer.sampleRate);              
         this.#looper.start(0, this.#loopStart); // use the offset here to start at the right time
     }
     
@@ -77,7 +71,7 @@ export class Looper {
         };
     }
 
-    cloneLoop() {
+    cutLoop() {
         // "copy" the selection from the primaryBuffer
         const sampleRate = this.#primaryBuffer.sampleRate;
         const f32Buf = this.#primaryBuffer.getChannelData(0)
@@ -88,7 +82,7 @@ export class Looper {
             sampleRate: sampleRate,
         });
         clippedBuffer.copyToChannel(f32Buf, 0);
-        return new Clip(clippedBuffer, this.#playbackRate);
+        return new Loop(clippedBuffer, this.#playbackRate);
     }
 
     reClip(start, end, width) {

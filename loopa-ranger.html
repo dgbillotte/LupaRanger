@@ -101,7 +101,7 @@
 						</section>
 					</section>			
 				</div>
-				<div id="shop" class="module">
+				<div id="loopshop" class="module">
 					<header>
 						<h3>ClipShop</h3>
 					</header>
@@ -110,7 +110,11 @@
 							<canvas class="waveform" width="1024" height="256"></canvas>
 						</div>
 					</section>
-					<section class="controls"></section>
+					<section class="controls">
+						<input type="range" id="clip-gain" class="slider clip-gain" min="1" max="20" value="1.0" step="0.01">
+						<input type="number" class="clip-gain-value" value="1.0">
+						<label for="clip-gain">Gain Up</label>
+					</section>
 				</div>
 				<div id="ranger" class="module">
 					<header>

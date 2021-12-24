@@ -107,6 +107,7 @@ const audioSrc = 'audio/dungeons.wav'
    
 import {Looper} from "./looper.js"
 import {LooperUI} from "./looperUI.js"
+import {LoopShop, LoopShopUI} from "./loopshop.js"
 import {Ranger, Track} from "./ranger.js"
 import {SystemBus} from "./bus.js"
 
@@ -114,9 +115,12 @@ import {SystemBus} from "./bus.js"
 let _audioCtx;
 let _superLooper;
 let _looperUI;
+let _loopShop;
+let _loopShopUI;
 let _ranger;
 let _bus;
 const _sourceBuffers = [];
+const _loops = [];
 
 
 // Local file loader 
@@ -156,19 +160,25 @@ function init() {
 
     
     // setup the looper
-    const looperBusConnection = _bus.addChannel("Loop Cutter");
+    const looperBusConnection = _bus.addChannel('Loop Cutter');
     _superLooper = new Looper(_audioCtx, looperBusConnection);
     // initDraw(_superLooper);
 
     // setup the looper UI
-    const canvasCtx = document.getElementById("waveform_canvas").getContext('2d');
+    const canvasCtx = document.getElementById('waveform_canvas').getContext('2d');
     const looperHtmlRoot = document.getElementById('looper');
     _looperUI = new LooperUI(looperHtmlRoot, _superLooper);
 
-    
+    // setup the loopshop and UI
+    const loopShopBusConnection = _bus.addChannel('LoopShop');
+    _loopShop = new LoopShop(loopShopBusConnection);
+    const loopShopHtmlRoot = document.getElementById('loopshop')
+    _loopShopUI = new LoopShopUI(loopShopHtmlRoot, _loopShop);
+
+
     // setup the arranger
-    const rangerBusConnection = _bus.addChannel("Ranger");
-    const rangerElement = document.querySelector('#ranger');
+    const rangerBusConnection = _bus.addChannel('Ranger');
+    const rangerElement = document.getElementById('ranger');
     _ranger = new Ranger(_audioCtx, rangerElement, rangerBusConnection);
   
 }
@@ -193,8 +203,12 @@ document.querySelector('#looper .transport-play').addEventListener('click', func
 
 // Button to add current loop as a track in ranger
 document.querySelector('.add-track').addEventListener('click', function() {
-      const loop = _superLooper.cloneLoop();
-      _ranger.createTrack(loop);
+    const loop = _superLooper.cutLoop();
+    _loops.push(loop);
+
+    _loopShopUI.loadLoop(loop);
+
+    _ranger.createTrack(loop);
 });
 
 // Button to toggle Ranger Play/Pause

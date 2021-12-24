@@ -1,33 +1,45 @@
 import { SelectWindow} from "./select-window.js";
 
-export class Clip {
-    #audioBuffer
-    #playbackRate
 
-    constructor(audioBuffer, playbackRate=1) {
-        this.#audioBuffer = audioBuffer;
-        this.#playbackRate = playbackRate;
+
+export class Loop {
+    audioBuffer;
+    playbackRate;
+    loop = false;
+    loopStart;
+    loopEnd;
+    startOffset;
+    duration;
+
+    constructor(audioBuffer, playbackRate=1, opts={}) {
+        this.audioBuffer = audioBuffer;
+        this.playbackRate = playbackRate;
+        if(opts.loop) {
+            this.loop = true;
+            this.loopStart = opts.loopStart !== undefined ? opts.loopStart : 0;
+            this.loopEnd = opts.loopEnd !== undefined ? opts.loopEnd : 0;
+            this.startOffset = opts.startOffset !== undefined ? opts.startOffset : 0;
+            this.duration = opts.duration !== undefined ? opts.duration : 0;
+        }
     }
-
-    get buffer() { return this.#audioBuffer; }
-    get playbackRate() { return this.#playbackRate; }
 }
 
 export class Track {
-    #ranger;
-    #canvasCtx;
+    #loop
+    #ranger
+    #canvasCtx
     #activeClip
-    buffer;
-    playbackRate;
     clips = [];
     mute = false;
 
 
-    constructor(ranger, options) {
+    constructor(ranger, loop) {
+        this.#loop = loop;
         this.#ranger = ranger;
-        this.buffer = options.buffer;
-        this.playbackRate = options.playbackRate;
     }
+
+    get buffer() { return this.#loop.audioBuffer; }
+    get playbackRate() { return this.#loop.playbackRate; }
 
     setCanvas(canvas) {
         this.#canvasCtx = canvas.getContext('2d');
@@ -72,7 +84,6 @@ export class Track {
         let length = Math.floor(this.#canvasCtx.canvas.width * this.buffer.length / (this.#ranger.lengthSec * this.buffer.sampleRate));
         let clipWindow = new SelectWindow(this.#canvasCtx, 0, 64, 1024, this.draw.bind(this), false);
         clipWindow.startEnd({start: start, end: start+length})
-        // clipWindow.mouseDownHandler(event);
         this.clips.push(clipWindow);
     }
 
