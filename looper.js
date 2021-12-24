@@ -85,6 +85,7 @@ export class Looper {
         return new Loop(clippedBuffer, this.#playbackRate);
     }
 
+
     reClip(start, end, width) {
         this.#loopStart = (start * 1.0 * this.#primaryBuffer.length / width) / this.#primaryBuffer.sampleRate;
         this.#loopEnd = (end * 1.0 * this.#primaryBuffer.length / width) / this.#primaryBuffer.sampleRate;
@@ -94,10 +95,10 @@ export class Looper {
         }
     }
     
-    loadPrimaryBuffer(audioBuffer) {
-        this.#primaryBuffer = audioBuffer;
+    loadLoop(loop) {
+        this.#primaryBuffer = loop.audioBuffer;
         this.#loopStart = 0;
-        this.#loopEnd = audioBuffer.duration;
+        this.#loopEnd = loop.audioBuffer.duration;
     }
 
     playbackRate(playbackRate=1.0) {

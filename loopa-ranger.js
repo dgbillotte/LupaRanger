@@ -108,7 +108,7 @@ const audioSrc = 'audio/dungeons.wav'
 import {Looper} from "./looper.js"
 import {LooperUI} from "./looperUI.js"
 import {LoopShop, LoopShopUI} from "./loopshop.js"
-import {Ranger, Track} from "./ranger.js"
+import {Loop, Ranger, Track} from "./ranger.js"
 import {SystemBus} from "./bus.js"
 
 // Audio / looper variables
@@ -243,7 +243,9 @@ function loadBuffer(buffer, name) {
     _audioCtx.decodeAudioData(buffer)
         .then(function(audioBuffer) {
             addSourceFile(audioBuffer, name);
-            _looperUI.loadPrimaryBuffer(audioBuffer);
+            // _looperUI.loadPrimaryBuffer(audioBuffer);
+            const loop = new Loop(audioBuffer, 1);
+            _looperUI.loadLoop(loop);
     });  
 }
 

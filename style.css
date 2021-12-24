@@ -19,6 +19,7 @@ th {
     text-align: left;
 }
 
+/* Module Level Settings */
 .module {
     background-color: #646464;
     border: solid #c4c4c4 0.25em;
@@ -56,7 +57,19 @@ th {
     color: orange;
 }
 
-/* Files Section */
+/* Common module sub-components */
+
+.controls {
+    display: flex;
+    justify-content: space-between;
+}
+
+.canvas-wrapper {
+    width: 100%;
+    margin: auto;
+}
+
+/* Files */
 #files .container {
     display: flex;
 }
@@ -73,15 +86,6 @@ th {
     width: 100%;
 }
 
-.canvas-wrapper {
-    width: 100%;
-    margin: auto;
-}
-
-#waveform_canvas {
-    border: solid black 2px;
-}
-
 .tracklist {
     background-color: black;
     padding: 10px;
@@ -95,13 +99,15 @@ th {
     border: groove #ff9800 1px;
 }
 
-#looper .controls {
-    display: flex;
-    justify-content: space-between;
-    /* flex-direction: column; */
+/* Looper  */
+#waveform_canvas {
+    border: solid black 2px;
 }
 
+
+/* LoopShop */
+
+/* Ranger */
 #ranger .controls {
-    display: flex;
     flex-direction: column;
 }

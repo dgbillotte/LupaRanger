@@ -18,8 +18,10 @@ export class Loop {
             this.loop = true;
             this.loopStart = opts.loopStart !== undefined ? opts.loopStart : 0;
             this.loopEnd = opts.loopEnd !== undefined ? opts.loopEnd : 0;
-            this.startOffset = opts.startOffset !== undefined ? opts.startOffset : 0;
+            this.startOffset = opts.startOffset !== undefined ? opts.startOffset : this.loopStart;
             this.duration = opts.duration !== undefined ? opts.duration : 0;
+        } else {
+            this.loop = false;
         }
     }
 }

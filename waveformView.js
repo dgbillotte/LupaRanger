@@ -47,7 +47,7 @@ export class WaveformView {
             x += sliceWidth;
         }
         
-        this.#canvasCtx.lineTo(width, height/2);
+        this.#canvasCtx.lineTo(width, center);
         this.#canvasCtx.stroke();
     }
 }

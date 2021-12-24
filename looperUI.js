@@ -47,8 +47,14 @@ export class LooperUI {
         this.#looper.stop();
     }
 
-    loadPrimaryBuffer(buffer, name) {
-        this.#looper.loadPrimaryBuffer(buffer);
+    // loadPrimaryBuffer(buffer, name) {
+    //     this.#looper.loadPrimaryBuffer(buffer);
+    //     this.setLooperHeader();
+    //     this.draw();
+    // }
+
+    loadLoop(loop, name) {
+        this.#looper.loadLoop(loop);
         this.setLooperHeader();
         this.draw();
     }
