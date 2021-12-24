@@ -16,7 +16,6 @@ export class SelectWindow {
     #rhHeight = 40;
     #rhWidth = 10;
 
-    // windowColor = 'rgba(0, 255, 0, 0.25)';
     windowColor = 'rgba(255, 0, 0, 0.25)';
     windowBorderColor = 'rgb(128, 128, 128)';
     windowHandleColor = 'rgb(128, 128, 128)';

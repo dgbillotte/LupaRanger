@@ -4,13 +4,11 @@ const WAVEFORM_COLOR = 'rgb(255,255,255)';
 
 export class WaveformView {
     #canvasCtx
-    // #buffer
     #backgroundColor
     #traceColor
     
     constructor(canvasCtx, backgroundColor='', traceColor='') {
         this.#canvasCtx = canvasCtx;
-        // this.#buffer = buffer;
         this.#backgroundColor = backgroundColor || DISPLAY_BACKGROUND;
         this.#traceColor = traceColor || WAVEFORM_COLOR;
     }
@@ -18,8 +16,6 @@ export class WaveformView {
 
 
     draw(waveData) {
-        // const waveData = (typeof(this.#buffer) === 'function') ? this.#buffer() : this.#buffer;
-
         const width = this.#canvasCtx.canvas.width;
         const height = this.#canvasCtx.canvas.height;
         this.#canvasCtx.clearRect(0, 0, width, height);

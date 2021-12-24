@@ -12,7 +12,6 @@ export class LooperUI {
     #looper
     #waveformView
     #selection
-    // #selectionOn = false;
     #selectionOn = true;
 
 
@@ -47,12 +46,6 @@ export class LooperUI {
         this.#looper.stop();
     }
 
-    // loadPrimaryBuffer(buffer, name) {
-    //     this.#looper.loadPrimaryBuffer(buffer);
-    //     this.setLooperHeader();
-    //     this.draw();
-    // }
-
     loadLoop(loop, name) {
         this.#looper.loadLoop(loop);
         this.setLooperHeader();
@@ -76,10 +69,6 @@ export class LooperUI {
             header.querySelector('.select-length .seconds').innerHTML = (sourceInfo.loopEnd - sourceInfo.loopStart).toFixed(3);
         }
     }
-
-    // setClipInfo() {
-
-    // }
 
     draw() {
         this.#waveformView.draw(this.#looper.primaryBufferData);
@@ -110,40 +99,4 @@ export class LooperUI {
         this.#canvasCtx.lineTo(px, this.#canvas.height);
         this.#canvasCtx.stroke();
     }
-
-    // set selectionOn(on) {
-    //     this.#selectionOn = on;
-    // }
-
-    // drawWaveform(waveData) {
-    //     const width = this.#canvasCtx.canvas.width;
-    //     const height = this.#canvasCtx.canvas.height;
-    //     this.#canvasCtx.clearRect(0, 0, width, height);
-        
-    //     this.#canvasCtx.fillStyle = DISPLAY_BACKGROUND;  
-    //     this.#canvasCtx.fillRect(0, 0, width, height);
-        
-    //     this.#canvasCtx.lineWidth = 1;
-    //     this.#canvasCtx.strokeStyle = WAVEFORM_COLOR;
-    //     this.#canvasCtx.beginPath();
-        
-    //     const sliceWidth = width * 1.0 / waveData.length;
-    //     let x = 0;
-        
-    //     const center = height / 2;
-    //     for(let i = 0; i < waveData.length; i++) {
-    //         const y = center + (waveData[i] * center);
-            
-    //         if(i === 0) {
-    //             this.#canvasCtx.moveTo(x, y);
-    //         } else {
-    //             this.#canvasCtx.lineTo(x, y);
-    //         }
-            
-    //         x += sliceWidth;
-    //     }
-        
-    //     this.#canvasCtx.lineTo(width, height/2);
-    //     this.#canvasCtx.stroke();
-    // }
 }

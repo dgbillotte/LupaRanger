@@ -119,8 +119,6 @@ export class ADSRWidget {
     draw() {
         const width = this.#canvasCtx.canvas.width;
         const height = this.#canvasCtx.canvas.height;
-        // const center = height/2;
-
         const attack = {x:this.#attack, y:5};
         const decay = {x: this.#attack + this.#decay, y: this.#sustain};
         const release = {x: width - this.#release, y: this.#sustain};

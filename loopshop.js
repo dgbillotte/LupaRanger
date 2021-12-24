@@ -1,13 +1,7 @@
 import { WaveformView } from './waveformView.js';
 import { Looper } from './looper.js'
 import { ADSRWidget } from './adsrWidget.js'
-
-const DISPLAY_BACKGROUND = 'rgb(0,0,0)';
-const WAVEFORM_COLOR = 'rgb(255,255,255)';
-
-
-
-
+import { LupaColors } from './colors.js'
 
 
 export class LoopShop {
@@ -59,7 +53,9 @@ export class LoopShopUI {
         this.#canvas.width = this.#canvas.parentElement.offsetWidth;
         this.#canvasCtx = this.#canvas.getContext('2d');
         this.#loopShop = loopShop;
-        this.#waveformView = new WaveformView(this.#canvasCtx, DISPLAY_BACKGROUND, WAVEFORM_COLOR);
+        const foreground = LupaColors.get('SHOP_WAVEFORM_COLOR');
+        const background = LupaColors.get('SHOP_WAVEFORM_BACKGROUND')
+        this.#waveformView = new WaveformView(this.#canvasCtx, background, foreground);
         this.#wireUpUI();
     }
     
@@ -120,9 +116,6 @@ export class LoopShopUI {
         const decayInc = (1.0 - sustain) / decay;
         const release = this.#envelope.release * pxToSamples;
         const releaseInc = sustain / release;
-
-        console.log("durations: ", duration, attack, decay, release);
-        console.log('incs: ', attackInc, decayInc, releaseInc);
         
         let idx = 0;
         let gain = 0;
@@ -181,8 +174,6 @@ export class LoopShopUI {
             }
             this.draw();
         }.bind(this));
-
-
 
     }
 
