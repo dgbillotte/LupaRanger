@@ -22,6 +22,13 @@ export class Looper {
         }.bind(this));
     }
 
+    set pitch(frequency) {
+        this.#currentLoop.frequency = frequency;
+        if(this.#looper) {
+            this.#looper.detune.value = this.#currentLoop.centsOffset;
+        }
+    }
+
     play() {
         this.#looper = new AudioBufferSourceNode(this.#audioContext, {
             buffer: this.#primaryBuffer,
@@ -30,6 +37,7 @@ export class Looper {
             loopEnd: this.#loopEnd,
             playbackRate: this.#playbackRate
         });
+        this.#looper.detune.value = this.#currentLoop.centsOffset;
         this.#looper.connect(this.#downstreamChain);
         this.#playStartSamples = Math.floor(this.#audioContext.currentTime * this.#primaryBuffer.sampleRate);              
         this.#looper.start(0, this.#loopStart); // use the offset here to start at the right time

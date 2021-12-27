@@ -4,6 +4,10 @@ import { SelectWindow} from "./select-window.js";
 
 export class Loop {
     #uuid;
+    #baseFrequency
+    #logBaseF
+    #currentFrequency;
+    #centsOffset = 0;
     audioBuffer;
     playbackRate;
     loop = false;
@@ -13,21 +17,47 @@ export class Loop {
     duration; // if looped, how long to play for. 0 -> infinite loop (until stop() is called)
 
     constructor(audioBuffer, playbackRate=1, opts={}) {
-        this.#uuid = crypto.randomUUID()
+        this.#uuid = crypto.randomUUID();
         this.audioBuffer = audioBuffer;
         this.playbackRate = playbackRate;
-        if(opts.loop) {
-            this.loop = true;
-            this.loopStart = opts.loopStart !== undefined ? opts.loopStart : 0;
-            this.loopEnd = opts.loopEnd !== undefined ? opts.loopEnd : 0;
-            this.startOffset = opts.startOffset !== undefined ? opts.startOffset : this.loopStart;
+        if(this.loop = Boolean(opts.loop)) {
             this.duration = opts.duration !== undefined ? opts.duration : 0;
-        } else {
-            this.loop = false;
         }
+           
+        this.loopStart = opts.loopStart !== undefined ? opts.loopStart : 0;
+        this.loopEnd = opts.loopEnd !== undefined ? opts.loopEnd : 0;
+        this.startOffset = opts.startOffset !== undefined ? opts.startOffset : this.loopStart;
+        this.#calcBaseFrequency();
     }
 
     get uuid() { return this.#uuid; }
+
+    set frequency(frequency) {
+        if(frequency == 0) {
+            this.#currentFrequency = this.#baseFrequency;
+            this.#centsOffset = 0;
+        } else {
+            this.#currentFrequency = frequency;
+            this.#centsOffset = this.#freqToCents(frequency);
+        }
+    }
+
+    get centsOffset() {
+            return this.#centsOffset;
+    }
+
+    #freqToCents(targetFreq) {
+        return (1200/Math.LN2) * (Math.log(targetFreq) - this.#logBaseF);
+    }
+
+    #calcBaseFrequency() {
+        const end = this.loopEnd > 0 ? this.loopEnd : this.audioBuffer.length;
+        this.#baseFrequency = this.audioBuffer.sampleRate / (end - this.loopStart);
+        this.#currentFrequency = this.#baseFrequency;
+        this.#logBaseF = Math.log(this.#baseFrequency);
+    }
+
+
 }
 
 export class Track {
