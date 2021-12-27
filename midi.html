@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script>
+
+            let midi = null;  // global MIDIAccess object
+            function onMIDISuccess( midiAccess ) {
+                console.log( "MIDI ready!" );
+                midi = midiAccess;  // store in the global (in real usage, would probably keep in an object instance)
+                let inputs = midiAccess.outputs;
+                if(inputs.size > 0) {
+                    // var iterator = inputs.values(); // returns an iterator that loops over all inputs
+                    let input = null;
+                    for(let entry of inputs) {
+                    // while(input = inputs.values().next()) {
+                        
+                        input = entry.value;
+                        // var input = iterator.next().value; // get the first input
+                        if(! midi) {
+                            console.log("Connected first input: " + input.name);
+                            input.onmidimessage = handleMIDIMessage;
+                        } else {
+                            console.log("Other device: " + input.name);
+                        }
+
+                    }
+                }
+            }
+
+            function onMIDIFailure(msg) {
+                console.log( "Failed to get MIDI access - " + msg );
+            }
+
+            navigator.requestMIDIAccess().then( onMIDISuccess, onMIDIFailure );
+
+
+            /*
+            First byte:
+            145: pads (channel 1)
+            154: keys (channel A)
+            186:
+                - 1: mod wheel
+                - 21-28: pots
+            191: buttons:
+                - 51: device select
+                - 52: device lock
+                - 74: capture MIDI
+                - 75: quantize
+                - 76: click
+                - 77: undo
+                - 102: track down
+                - 103: track up
+                - 115: play
+                - 116: stop
+                - 117: record
+                - 118: loop
+
+            234: pitch wheel
+            */
+            function handleMIDIMessage(event){
+                let data = event.data;
+                if(data[0] === 248) {
+                    // 248 is the midi clock
+                    return;
+                }
+
+                if(data.length !== 3) {
+                    console.log('got something ' + data.length + ' long: ', data[0].toString(16), data[1]);
+                } else if (data.length === 3) {
+                    if(data[0] == 191) {
+                        console.log('stop(191)', data[0].toString(16), data[1].toString(16) );
+                    // } else if(data[2] == 0) {
+                    //     return;
+                    } else if(data[0] === 154) {
+                        console.log('keys: ', data[0].toString(16), data[1])
+                    } else {
+                        console.log(data[0].toString(16), data[1], data[2]);
+                    }
+                } 
+            }
+
+    </script>
+</head>
+<body>
+    <h1>Testing out RxJS</h1>
+    <button>Test</button>
+
+</body>
+</html>

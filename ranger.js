@@ -3,15 +3,17 @@ import { SelectWindow} from "./select-window.js";
 
 
 export class Loop {
+    #uuid;
     audioBuffer;
     playbackRate;
     loop = false;
     loopStart;
     loopEnd;
     startOffset;
-    duration;
+    duration; // if looped, how long to play for. 0 -> infinite loop (until stop() is called)
 
     constructor(audioBuffer, playbackRate=1, opts={}) {
+        this.#uuid = crypto.randomUUID()
         this.audioBuffer = audioBuffer;
         this.playbackRate = playbackRate;
         if(opts.loop) {
@@ -24,6 +26,8 @@ export class Loop {
             this.loop = false;
         }
     }
+
+    get uuid() { return this.#uuid; }
 }
 
 export class Track {

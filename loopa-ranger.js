@@ -104,7 +104,8 @@ Input/Output
 const audioSrc = 'audio/dungeons.wav'
 // const audioSrc = 'audio/chirp-2secs.wav'
 // const audioSrc = 'audio/bari1.wav'
-   
+
+import {Library} from "./library.js"
 import {Looper} from "./looper.js"
 import {LooperUI} from "./looperUI.js"
 import {LoopShop, LoopShopUI} from "./loopshop.js"
@@ -119,8 +120,9 @@ let _loopShop;
 let _loopShopUI;
 let _ranger;
 let _bus;
-const _sourceBuffers = [];
-const _loops = [];
+let _library;
+// const _sourceBuffers = [];
+// const _loops = [];
 
 
 // Local file loader 
@@ -149,6 +151,7 @@ document.getElementById('predefined-files').addEventListener('input', function(e
 
 
 function init() {
+    _library = new Library();
     _audioCtx = new AudioContext();
     if (_audioCtx.state === 'suspended') {
         _audioCtx.resume();
@@ -204,11 +207,15 @@ document.querySelector('#looper .transport-play').addEventListener('click', func
 // Button to add current loop as a track in ranger
 document.querySelector('.add-track').addEventListener('click', function() {
     const loop = _superLooper.cutLoop();
-    _loops.push(loop);
-
-    _loopShopUI.loadLoop(loop);
-
+    _library.addLoop(loop);
     _ranger.createTrack(loop);
+});
+
+// Button to add current loop as a track in ranger
+document.querySelector('.to-clip-shop').addEventListener('click', function() {
+    const loop = _superLooper.cutLoop();
+    _library.addLoop(loop);
+    _loopShopUI.loadLoop(loop);
 });
 
 // Button to toggle Ranger Play/Pause
@@ -227,6 +234,12 @@ document.querySelector('#ranger .transport-play').addEventListener('click', func
     }
 });
 
+for(let button of document.querySelectorAll('.module-buttons .minmax-toggle')) {
+    button.addEventListener('click', function(event) {
+        event.target.parentNode.parentNode.nextElementSibling.hidden = !event.target.parentNode.parentNode.nextElementSibling.hidden;
+    });
+}
+
 
 
 //------------------ File Loading & Buffer Handling ----------------
@@ -242,16 +255,14 @@ function blobOrError(response) {
 function loadBuffer(buffer, name) {
     _audioCtx.decodeAudioData(buffer)
         .then(function(audioBuffer) {
-            addSourceFile(audioBuffer, name);
-            // _looperUI.loadPrimaryBuffer(audioBuffer);
-            const loop = new Loop(audioBuffer, 1);
+            addFileToUI(audioBuffer, name);
+            const loop = _library.loadAudioBuffer(audioBuffer, name);
             _looperUI.loadLoop(loop);
     });  
 }
 
-function addSourceFile(buffer, name) {
-    _sourceBuffers.push({name: name, audioBuffer: buffer});
 
+function addFileToUI(buffer, name) {
     const tmp = document.createElement('tbody');
     tmp.innerHTML =
         `<tr>

@@ -3,12 +3,13 @@ import { Loop } from './ranger.js';
 export class Looper {
     #audioContext;
     #primaryBuffer;
+    #loop = true;
     #loopStart = 0;
     #loopEnd;
     #looper;
     #downstreamChain;
     #playbackRate = 1.0;
-
+    #currentLoop = null;
     #playStartSamples
     
     constructor(audioContext, downstreamChain) {
@@ -81,7 +82,25 @@ export class Looper {
             sampleRate: sampleRate,
         });
         clippedBuffer.copyToChannel(f32Buf, 0);
-        return new Loop(clippedBuffer, this.#playbackRate);
+        
+        const loop = new Loop(clippedBuffer, this.#playbackRate, {
+            loop: this.#loop,
+            loopStart: this.#loopStart,
+            loopEnd: this.#loopEnd,    
+        });
+        return loop;
+    }
+
+    saveLoop() {
+        if(! this.#currentLoop) {
+            return null;
+        }
+
+        this.#currentLoop.loop = this.#loop;
+        this.#currentLoop.loopStart = this.#loopStart;
+        this.#currentLoop.loopEnd = this.#loopEnd;
+        this.#currentLoop.playbackRate = this.#playbackRate;
+        return this.#currentLoop;
     }
 
 
@@ -95,6 +114,7 @@ export class Looper {
     }
     
     loadLoop(loop) {
+        this.#currentLoop = loop;
         this.#primaryBuffer = loop.audioBuffer;
         this.#loopStart = 0;
         this.#loopEnd = loop.audioBuffer.duration;

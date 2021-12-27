@@ -24,43 +24,48 @@
 				<div id="files" class="module">
 					<header>
 						<h3>Files</h3>
+						<div class="module-buttons">
+							<button class="minmax-toggle">^</button>
+						</div>
 					</header>
-					<section class="container">
-						<div class="load">
-							<p>Preloaded Sources:</p>
-							<select name="" id="predefined-files">
-								<option>Select a file</option>
-								<option>animals.mp3</option>
-								<option>bari1.wav</option>
-								<option>chirp-2secs.wav</option>
-								<option>dope-drum-loop_C_major.wav</option>
-								<option>dungeons.wav</option>
-								<option>huskey.wav</option>
-								<option>sharks1.wav</option>
-								<option>stream.wav</option>
-								<option>talking.wav</option>
-								<option>water-pouring.wav</option>
-							</select>
-							<p>Your Sources:</p>
-							<input type="file" id="local-file">
-						</div>
-						<div class="loaded">
-							<table>
-								<thead>
-									<tr>
-										<th>Filename</th>
-										<th>Samples</th>
-										<th>Seconds</th>
-										<th>SampleRate</th>
-										<th>Actions</th>
-									</tr>
-								</thead>
-								<tbody>
-
-								</tbody>
-							</table>
-						</div>
-					</section>
+					<div class="main-panel">
+						<section class="container">
+							<div class="load">
+								<p>Preloaded Sources:</p>
+								<select name="" id="predefined-files">
+									<option>Select a file</option>
+									<option>animals.mp3</option>
+									<option>bari1.wav</option>
+									<option>chirp-2secs.wav</option>
+									<option>dope-drum-loop_C_major.wav</option>
+									<option>dungeons.wav</option>
+									<option>huskey.wav</option>
+									<option>sharks1.wav</option>
+									<option>stream.wav</option>
+									<option>talking.wav</option>
+									<option>water-pouring.wav</option>
+								</select>
+								<p>Your Sources:</p>
+								<input type="file" id="local-file">
+							</div>
+							<div class="loaded">
+								<table>
+									<thead>
+										<tr>
+											<th>Filename</th>
+											<th>Samples</th>
+											<th>Seconds</th>
+											<th>SampleRate</th>
+											<th>Actions</th>
+										</tr>
+									</thead>
+									<tbody>
+	
+									</tbody>
+								</table>
+							</div>
+						</section>
+					</div>
 				</div>
 
 				<div id="looper" class="module">
@@ -77,79 +82,98 @@
 								Select Length: <span class="samples">--</span> / <span class="seconds">--</span> secs.
 							</div>
 						</div>
-					</header>
-
-					<section class="display">
-						<div class="canvas-wrapper">
-							<canvas id="waveform_canvas" width="1024" height="256"></canvas>
+						<div class="module-buttons">
+							<button class="minmax-toggle">^</button>
 						</div>
-					</section>
-					
-					<section class="controls">
-						<section class="transport">
-							<button data-playing="false" class="transport-play"><span>Play/Pause</span></button>
-							
-							<input type="range" id="playback-speed" class="slider playback-speed" min="0" max="5" value="1.0" step="0.01" />
-							<label for="playback-speed">Playback Speed</label>
+					</header>
+					<div class="main-panel">
+						<section class="display">
+							<div class="canvas-wrapper">
+								<canvas id="waveform_canvas" width="1024" height="256"></canvas>
+							</div>
 						</section>
-						<section class="clip-info">
-							
-						</section>
-						<section class="export">
-							<button class="to-clip-shop"><span>ClipShop</span></button>
-							<button class="add-track"><span>Ranger</span></button>
-						</section>
-					</section>			
+						
+						<section class="controls">
+							<section class="transport">
+								<button data-playing="false" class="transport-play"><span>Play/Pause</span></button>
+								
+								<input type="range" id="playback-speed" class="slider playback-speed" min="0" max="5" value="1.0" step="0.01" />
+								<label for="playback-speed">Playback Speed</label>
+							</section>
+							<section class="clip-info">
+								
+							</section>
+							<section class="export">
+								<button class="to-clip-shop"><span>ClipShop</span></button>
+								<button class="add-track"><span>Ranger</span></button>
+							</section>
+						</section>			
+					</div>
 				</div>
 				<div id="loopshop" class="module">
 					<header>
 						<h3>ClipShop</h3>
-					</header>
-					<section class="display">
-						<div class="canvas-wrapper">
-							<canvas class="waveform" width="1024" height="256"></canvas>
+						<div class="module-buttons">
+							<button class="minmax-toggle">^</button>
 						</div>
-					</section>
-					<section class="controls">
-						<section class="left">
-							<input type="range" id="clip-gain" class="slider clip-gain" min="1" max="20" value="1.0" step="0.01">
-							<input type="number" class="clip-gain-value" value="1.0">
-							<label for="clip-gain">Gain Up</label>
+					</header>
+					<div class="main-panel">
+						<section class="display">
+							<div class="canvas-wrapper">
+								<canvas class="waveform" width="1024" height="256"></canvas>
+							</div>
 						</section>
-						<section class="righ">
-							<button class="adsr">ADSR</button>
-							<button class="ar">AR</button>
+						<section class="controls">
+							<section class="left">
+								<input type="range" id="clip-gain" class="slider clip-gain" min="1" max="20" value="1.0" step="0.01">
+								<input type="number" class="clip-gain-value" value="1.0">
+								<label for="clip-gain">Gain Up</label>
+							</section>
+							<section class="righ">
+								<button class="adsr">ADSR</button>
+								<button class="ar">AR</button>
+							</section>
 						</section>
-					</section>
+					</div>
 				</div>
 				<div id="ranger" class="module">
 					<header>
 						<h3>Ranger</h3>
+						<div class="module-buttons">
+							<button class="minmax-toggle">^</button>
+						</div>
 					</header>
-					<section class="tracklist">
-					</section>
-					<section class="transport">
-						<button data-playing="false" class="transport-play" role="switch" aria-checked="false">
-							<span>Play/Pause</span>
-						</button>
-					</section>
+					<div class="main-panel">
+						<section class="tracklist">
+						</section>
+						<section class="transport">
+							<button data-playing="false" class="transport-play" role="switch" aria-checked="false">
+								<span>Play/Pause</span>
+							</button>
+						</section>
+					</div>
 				</div>
 				
 				<div id="master-bus" class="module">
 					<header>
 						<h3>Master Bus</h3>
+						<div class="module-buttons">
+							<button class="minmax-toggle">^</button>
+						</div>
 					</header>
-					<section class="channels">
-						<h4>Channels</h4>
-					</section>
-					<section class="master">
-						<h4>Master Controls</h4>
-						<input type="range" id="volume" class="slider volume" min="0" max="2" value="0.5" step="0.01"  />
-						<label for="volume">Master Volume</label>
-		
-						<input type="range" id="distortion" class="slider distortion" min="0" max="50" value="1" step="1"  />
-						<label for="distortion">Distortion</label>
-					</section>
+					<div class="main-panel">
+						<section class="channels">
+							<h4>Channels</h4>
+						</section>
+						<section class="master">
+							<h4>Master Controls</h4>
+							<input type="range" id="volume" class="slider volume" min="0" max="2" value="0.5" step="0.01"  />
+							<label for="volume">Master Volume</label>
+			
+							<input type="range" id="distortion" class="slider distortion" min="0" max="50" value="1" step="1"  />
+							<label for="distortion">Distortion</label>
+						</section>
+					</div>
 				</div>
 			</div>
 		</main>
