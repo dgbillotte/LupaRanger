@@ -5,7 +5,7 @@ being a slave to Ableton. Most of this has been figured out by hooking it
 up to a web-audio page and just see what comes out as I play with it.
 
 ## Keys:
-Keys come through as 0x9A 48-84
+Keys come through as 0x9A 48-84 (50 is )
 
 ## Pitch Bend and Mod Wheels
 - Pitch Bend: 0xEA

@@ -11,6 +11,8 @@ export class Looper {
     #playbackRate = 1.0;
     #currentLoop = null;
     #playStartSamples
+    #currentFrequency
+    #currentDetune
     
     constructor(audioContext, downstreamChain) {
         this.#audioContext = audioContext;
@@ -22,12 +24,12 @@ export class Looper {
         }.bind(this));
     }
 
-    set pitch(frequency) {
-        this.#currentLoop.frequency = frequency;
-        if(this.#looper) {
-            this.#looper.detune.value = this.#currentLoop.centsOffset;
-        }
-    }
+    // set pitch(frequency) {
+    //     this.#currentLoop.frequency = frequency;
+    //     if(this.#looper) {
+    //         this.#looper.detune.value = this.#currentLoop.centsOffset;
+    //     }
+    // }
 
     play() {
         this.#looper = new AudioBufferSourceNode(this.#audioContext, {
@@ -37,7 +39,7 @@ export class Looper {
             loopEnd: this.#loopEnd,
             playbackRate: this.#playbackRate
         });
-        this.#looper.detune.value = this.#currentLoop.centsOffset;
+        this.#looper.detune.value = this.#currentDetune;
         this.#looper.connect(this.#downstreamChain);
         this.#playStartSamples = Math.floor(this.#audioContext.currentTime * this.#primaryBuffer.sampleRate);              
         this.#looper.start(0, this.#loopStart); // use the offset here to start at the right time
@@ -59,6 +61,41 @@ export class Looper {
             this.play();
         }
     }
+
+
+
+
+    // move these to looper maybe? 
+    // - this has more to do with playing it
+    set pitch(frequency) {
+        if(frequency == 0) {
+            this.#currentFrequency = this.#currentLoop.baseFrequency;
+            this.#currentDetune = 0;
+            console.count(`BaseFreq: ${this.#currentFrequency}, cents: 0`)
+        } else {
+            this.#currentFrequency = frequency;
+            this.#currentDetune = this.#freqToCents(frequency);
+            console.count(`freq: ${frequency}, cents: ${this.#currentDetune}`)
+        }
+        if(this.#looper) {
+            this.#looper.detune.value = this.#currentDetune;
+        }
+        // this.#centsOffset = frequency;
+    }
+
+    #freqToCents(targetFreq) {
+        return (1200/Math.LN2) * (Math.log(targetFreq) - this.#currentLoop.baseLog);
+    }
+
+
+
+
+
+
+
+
+
+
 
     currentSampleIndex() {
         const nowSamples = Math.floor(this.#audioContext.currentTime * this.#primaryBuffer.sampleRate);
@@ -91,7 +128,7 @@ export class Looper {
         });
         clippedBuffer.copyToChannel(f32Buf, 0);
         
-        const loop = new Loop(clippedBuffer, this.#playbackRate, {
+        const loop = new Loop(clippedBuffer, 0, this.#playbackRate, {
             loop: this.#loop,
             loopStart: this.#loopStart,
             loopEnd: this.#loopEnd,    
@@ -126,6 +163,8 @@ export class Looper {
         this.#primaryBuffer = loop.audioBuffer;
         this.#loopStart = 0;
         this.#loopEnd = loop.audioBuffer.duration;
+        this.#currentFrequency = loop.baseFrequency;
+        this.#currentDetune = 0;
     }
 
     playbackRate(playbackRate=1.0) {

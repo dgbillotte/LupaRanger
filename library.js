@@ -17,7 +17,7 @@ export class Library {
 
     loadAudioBuffer(audioBuffer, name) {
         this.#sourceBuffers.push(audioBuffer);
-        const loop = new Loop(audioBuffer, 1);
+        const loop = new Loop(audioBuffer, 0, 1);
         this.#loops.push(loop);
         return loop;
     }
