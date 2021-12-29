@@ -1,8 +1,12 @@
 /*
 Primary Todos:
 
+Current Focus: Get Loopshop fully integrated with Cutter
+
 Next Steps:
-- Source track library (exists in simple form)
+- finish up 1st round of loopshop(LS):
+  - LS should realtime sync with the selection in loop-cutter
+- Source track library (exists in simple form) 
 
 
 - Visuals:
@@ -12,8 +16,7 @@ Next Steps:
     - allow manipulation of the read-head
     
 Bugs:
-- !! After playing through MIDI, the selection window freezes up and changes/moves
-only after the next key is pressed. Weird. It works fine until the first keypress
+
 
 Thoughts:
 - could copyWithin() be used in some kind of cool recursive/fractaly way?

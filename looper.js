@@ -8,7 +8,6 @@ export class Looper {
     #loop = true;
     #loopStart = 0;
     #loopEnd;
-    // #looper;
     #downstreamChain;
     #playbackRate = 1.0;
     #currentLoop = null;
@@ -16,7 +15,6 @@ export class Looper {
     #currentFrequency
     #currentDetune
 
-    // #zombies = [];
     #playingLoops =  new Map();
 
     #loopPlayer
@@ -32,23 +30,23 @@ export class Looper {
     }
 
     play(playAt=0, frequency=0) {
-        this.#loopPlayer = new LoopPlayer(this.#audioContext, this.#currentLoop, this.#downstreamChain);
-        // not sure if this is the cleanest way to do this, but the loop settings were NOT
-        // getting passed from play to play. Might be better to make them member variables...
-        this.#currentLoop.loopStart = this.#loopStart;
-        this.#currentLoop.startOffset = this.#loopStart;
-        this.#currentLoop.loopEnd = this.#loopEnd;
-
         if(frequency > 0) {
             const detune = this.#freqToCents(frequency);
-            this.#loopPlayer.play(playAt, detune);
-            this.#playingLoops.set(frequency, this.#loopPlayer);
+            const loopPlayer = new LoopPlayer(this.#audioContext, this.#currentLoop, this.#downstreamChain);
+            loopPlayer.play(playAt, detune);
+            this.#playingLoops.set(frequency, loopPlayer);
         } else {
             this.#loopPlayer.play(playAt);
         }
     }
     
-
+    /*
+     There are essentially two play modes:
+     - no frequency given, start and continue playing until stop button is pressed
+     - if frequency provided, (polyphonic mode?) create a short-lived player for
+       each frequency (key-press).
+     - frequency provided could also be monophonic, always playing the last pitch it received, meh...
+     */
     stop(stopAt=0, frequency=0) {
         if(this.#loopPlayer) {
             if(frequency) {
@@ -59,7 +57,6 @@ export class Looper {
                 }
             } else {
                 this.#loopPlayer.stop(stopAt);
-                this.#loopPlayer = null;
             }
         }
     }
@@ -89,14 +86,6 @@ export class Looper {
         return (1200/Math.LN2) * (Math.log(targetFreq) - this.#currentLoop.baseLog);
     }
 
-    // for visualization
-    currentSampleIndex() {
-        const nowSamples = Math.floor(this.#audioContext.currentTime * this.#primaryBuffer.sampleRate);
-        const samplesSinceStart = nowSamples - this.#playStartSamples;
-        const loopStartSamples = this.#loopStart * this.#primaryBuffer.sampleRate;
-        const clipLengthSamples = Math.floor((this.#loopEnd * this.#primaryBuffer.sampleRate) - loopStartSamples);
-        return loopStartSamples + samplesSinceStart % clipLengthSamples;
-    }
 
     // for visualization
     get bufferInfo() {
@@ -162,12 +151,12 @@ export class Looper {
         this.#loopEnd = loop.audioBuffer.duration;
         this.#currentFrequency = loop.baseFrequency;
         this.#currentDetune = 0;
+        this.#loopPlayer = new LoopPlayer(this.#audioContext, this.#currentLoop, this.#downstreamChain);
     }
 
     // for editing
     playbackRate(playbackRate=1.0) {
         this.#playbackRate = playbackRate;
-        // this.#looper.playbackRate.value = playbackRate;
         this.#loopPlayer.playbackRate = playbackRate;
     }
 
