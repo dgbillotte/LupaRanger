@@ -149,8 +149,50 @@ document.getElementById('predefined-files').addEventListener('input', function(e
 });
 
 
+//-------------------- Setup MIDI --------------------------
+let _midiAccess;
+
+function onMIDISuccess(midiAccess) {
+    _midiAccess = midiAccess;
+    const inputs = midiAccess.inputs;
+    if(inputs.size > 0) {
+        var iterator = inputs.values(); // returns an iterator that loops over all inputs
+        var input = iterator.next().value; // get the first input
+        input.onmidimessage = handleMIDIMessage;
+        console.log('connected to MIDI device: ' + input.name);
+    }
+}
+
+function onMIDIFailure(msg) {
+    console.log( "Failed to get MIDI access - " + msg );
+}
+
+function handleMIDIMessage(event) {
+    let data = event.data;
+
+    // this is key on for channel A
+    if(data[0] == 154) {
+        const midiNote = data[1];
+        const velocity = data[2];
+
+        if(velocity == 0) {
+            _looperUI.stop();
+        } else {
+            _looperUI.play(midiToHz(midiNote));
+        }
+    }
+}
+
+function midiToHz(midiNote) {
+    return 440 * Math.pow(2, (midiNote-69)/12);
+}
+
+//-------------------- End Setup MIDI ----------------------
+
 
 function init() {
+    navigator.requestMIDIAccess().then( onMIDISuccess, onMIDIFailure );
+
     _library = new Library();
     _audioCtx = new AudioContext();
     if (_audioCtx.state === 'suspended') {
@@ -257,6 +299,7 @@ function loadBuffer(buffer, name) {
         .then(function(audioBuffer) {
             addFileToUI(audioBuffer, name);
             const loop = _library.loadAudioBuffer(audioBuffer, name);
+            loop.loop = true;
             _looperUI.loadLoop(loop);
     });  
 }

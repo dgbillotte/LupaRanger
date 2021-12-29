@@ -6,14 +6,14 @@ export class Loop {
     #uuid;
     #baseFrequency
     #logBaseF
-    // #currentFrequency;
-    // #centsOffset = 0;
-    audioBuffer;
-    playbackRate;
-    loop = false;
-    loopStart;
-    loopEnd;
-    startOffset;
+    #currentFrequency
+    #centsOffset
+    audioBuffer
+    playbackRate
+    loop
+    loopStart
+    loopEnd
+    startOffset
     duration; // if looped, how long to play for. 0 -> infinite loop (until stop() is called)
 
     constructor(audioBuffer, baseFrequency=261.63, playbackRate=1, opts={}) {
@@ -25,15 +25,21 @@ export class Loop {
         }
            
         this.loopStart = opts.loopStart !== undefined ? opts.loopStart : 0;
-        this.loopEnd = opts.loopEnd !== undefined ? opts.loopEnd : 0;
+        this.loopEnd = opts.loopEnd !== undefined ? opts.loopEnd : audioBuffer.duration;
         this.startOffset = opts.startOffset !== undefined ? opts.startOffset : this.loopStart;
         this.#calcBaseFrequency(261.63);
+        this.#centsOffset = 0;
     }
 
     get uuid() { return this.#uuid; }
     get baseFrequency() { return this.#baseFrequency; }
     get baseLog() { return this.#logBaseF; }
-
+    get frequency() { return this.#currentFrequency ? this.#currentFrequency : this.#baseFrequency; }
+    set frequency(frequency) {
+        this.#currentFrequency = frequency;
+        this.#centsOffset = this.#freqToCents(frequency);
+     }
+     get detune() { return this.#centsOffset; }
 
     // default is middle C
     #calcBaseFrequency(base=0) {
@@ -46,6 +52,9 @@ export class Loop {
         this.#logBaseF = Math.log(this.#baseFrequency);
     }
 
+    #freqToCents(targetFreq) {
+        return (1200/Math.LN2) * (Math.log(targetFreq) - this.#logBaseF);
+    }
 
 }
 

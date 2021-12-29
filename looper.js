@@ -1,4 +1,6 @@
 import { Loop } from './ranger.js';
+import { LoopPlayer } from './loopPlayer.js';
+
 
 export class Looper {
     #audioContext;
@@ -6,13 +8,17 @@ export class Looper {
     #loop = true;
     #loopStart = 0;
     #loopEnd;
-    #looper;
+    // #looper;
     #downstreamChain;
     #playbackRate = 1.0;
     #currentLoop = null;
     #playStartSamples
     #currentFrequency
     #currentDetune
+
+    #zombies = [];
+
+    #loopPlayer
     
     constructor(audioContext, downstreamChain) {
         this.#audioContext = audioContext;
@@ -24,79 +30,50 @@ export class Looper {
         }.bind(this));
     }
 
-    // set pitch(frequency) {
-    //     this.#currentLoop.frequency = frequency;
-    //     if(this.#looper) {
-    //         this.#looper.detune.value = this.#currentLoop.centsOffset;
-    //     }
-    // }
-
-    play() {
-        this.#looper = new AudioBufferSourceNode(this.#audioContext, {
-            buffer: this.#primaryBuffer,
-            loop: true,
-            loopStart:  this.#loopStart,
-            loopEnd: this.#loopEnd,
-            playbackRate: this.#playbackRate
-        });
-        this.#looper.detune.value = this.#currentDetune;
-        this.#looper.connect(this.#downstreamChain);
-        this.#playStartSamples = Math.floor(this.#audioContext.currentTime * this.#primaryBuffer.sampleRate);              
-        this.#looper.start(0, this.#loopStart); // use the offset here to start at the right time
+    play(playAt=0, frequency=0) {
+        this.#loopPlayer = new LoopPlayer(this.#audioContext, this.#currentLoop, this.#downstreamChain);
+        if(frequency > 0) {
+            const detune = this.#freqToCents(frequency)
+            this.#loopPlayer.play(playAt, detune);
+        } else {
+            this.#loopPlayer.play(playAt);
+        }
     }
     
-    stop() {
-        this.#looper.stop();
-        this.#looper.disconnect(this.#downstreamChain);
-        this.#looper = null;
-    }
 
-    playing() {
-        return Boolean(this.#looper);
-    }
-    
-    reset() {
-        if(this.#looper) {
-            this.stop();
-            this.play();
+    stop(stopAt=0) {
+        if(this.#loopPlayer) {
+            this.#loopPlayer.stop(stopAt);
+            this.#loopPlayer = null;
         }
     }
 
-
-
-
-    // move these to looper maybe? 
-    // - this has more to do with playing it
+    playing() {
+        return Boolean(this.#loopPlayer);
+    }
+    
+    // tuning
     set pitch(frequency) {
         if(frequency == 0) {
             this.#currentFrequency = this.#currentLoop.baseFrequency;
             this.#currentDetune = 0;
-            console.count(`BaseFreq: ${this.#currentFrequency}, cents: 0`)
+            console.log(`BaseFreq: ${this.#currentFrequency}, cents: 0`)
         } else {
             this.#currentFrequency = frequency;
             this.#currentDetune = this.#freqToCents(frequency);
-            console.count(`freq: ${frequency}, cents: ${this.#currentDetune}`)
+            console.log(`freq: ${frequency}, cents: ${this.#currentDetune}`)
         }
-        if(this.#looper) {
-            this.#looper.detune.value = this.#currentDetune;
+        if(this.#loopPlayer && this.#loopPlayer.isPlaying()) {
+            this.#loopPlayer.detune.value = this.#currentDetune;
         }
-        // this.#centsOffset = frequency;
     }
 
+    // tuning
     #freqToCents(targetFreq) {
         return (1200/Math.LN2) * (Math.log(targetFreq) - this.#currentLoop.baseLog);
     }
 
-
-
-
-
-
-
-
-
-
-
+    // for visualization
     currentSampleIndex() {
         const nowSamples = Math.floor(this.#audioContext.currentTime * this.#primaryBuffer.sampleRate);
         const samplesSinceStart = nowSamples - this.#playStartSamples;
@@ -105,6 +82,7 @@ export class Looper {
         return loopStartSamples + samplesSinceStart % clipLengthSamples;
     }
 
+    // for visualization
     get bufferInfo() {
         return {
             samples: this.#primaryBuffer.length,
@@ -113,10 +91,11 @@ export class Looper {
             playbackRate: this.#playbackRate,
             loopStart: this.#loopStart,
             loopEnd: this.#loopEnd,
-            currentSample: this.currentSampleIndex()
+            currentSample: this.#loopPlayer ? this.#loopPlayer.currentSampleIndex() : 0
         };
     }
 
+    // for editing
     cutLoop() {
         const sampleRate = this.#primaryBuffer.sampleRate;
         const f32Buf = this.#primaryBuffer.getChannelData(0)
@@ -136,6 +115,7 @@ export class Looper {
         return loop;
     }
 
+    // for editing
     saveLoop() {
         if(! this.#currentLoop) {
             return null;
@@ -148,16 +128,17 @@ export class Looper {
         return this.#currentLoop;
     }
 
-
+    // for editing
     reClip(start, end, width) {
         this.#loopStart = (start * 1.0 * this.#primaryBuffer.length / width) / this.#primaryBuffer.sampleRate;
         this.#loopEnd = (end * 1.0 * this.#primaryBuffer.length / width) / this.#primaryBuffer.sampleRate;
-        if(this.#looper) {
-            this.#looper.loopStart = this.#loopStart;
-            this.#looper.loopEnd = this.#loopEnd;
+        if(this.#loopPlayer) {
+            this.#loopPlayer.loopStart = this.#loopStart;
+            this.#loopPlayer.loopEnd = this.#loopEnd;
         }
     }
     
+    // for editing (reloading is not needed for playing)
     loadLoop(loop) {
         this.#currentLoop = loop;
         this.#primaryBuffer = loop.audioBuffer;
@@ -167,11 +148,14 @@ export class Looper {
         this.#currentDetune = 0;
     }
 
+    // for editing
     playbackRate(playbackRate=1.0) {
         this.#playbackRate = playbackRate;
-        this.#looper.playbackRate.value = playbackRate;
+        // this.#looper.playbackRate.value = playbackRate;
+        this.#loopPlayer.playbackRate = playbackRate;
     }
 
+    // for visualizing
     get primaryBufferData() {
         return this.#primaryBuffer.getChannelData(0);
     }

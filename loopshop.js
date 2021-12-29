@@ -21,9 +21,9 @@ export class LoopShop {
 
     }
 
-    reset() {
+    // reset() {
 
-    }
+    // }
 
     get bufferData() {
         if(this.#currentLoop) {

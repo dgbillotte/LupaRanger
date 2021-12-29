@@ -24,16 +24,9 @@ export class LooperUI {
         this.#waveformView = new WaveformView(this.#canvasCtx, DISPLAY_BACKGROUND, WAVEFORM_COLOR);
         this.#selection = new SelectWindow(this.#canvasCtx, 0, this.#canvas.height, this.#canvas.width, this.reclipHandler.bind(this));
         window.addEventListener('resize', this.#resize.bind(this));
-        for(let button of this.#htmlRoot.querySelectorAll('.controls .notes button.pitch')) {
-            button.addEventListener('click', function(event) {
-                const btnText = event.target.innerText;
-                if(btnText == 'Base') {
-                    this.#looper.pitch = 0;
-                } else {
-                    this.#looper.pitch = parseFloat(btnText);
-                }
-            }.bind(this));
-        }
+        this.#htmlRoot.querySelector('button.kill-zombies').addEventListener('click', function() {
+            this.#looper.killZombies();
+        }.bind(this))
     }
 
     #resize() {
@@ -47,8 +40,8 @@ export class LooperUI {
         this.draw();
     }
 
-    play() {
-        this.#looper.play();
+    play(frequency=0) {
+         this.#looper.play(0, frequency);
         this.playAnimation();
     }
 
