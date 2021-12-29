@@ -16,7 +16,8 @@ export class Looper {
     #currentFrequency
     #currentDetune
 
-    #zombies = [];
+    // #zombies = [];
+    #playingLoops =  new Map();
 
     #loopPlayer
     
@@ -32,24 +33,39 @@ export class Looper {
 
     play(playAt=0, frequency=0) {
         this.#loopPlayer = new LoopPlayer(this.#audioContext, this.#currentLoop, this.#downstreamChain);
+        // not sure if this is the cleanest way to do this, but the loop settings were NOT
+        // getting passed from play to play. Might be better to make them member variables...
+        this.#currentLoop.loopStart = this.#loopStart;
+        this.#currentLoop.startOffset = this.#loopStart;
+        this.#currentLoop.loopEnd = this.#loopEnd;
+
         if(frequency > 0) {
-            const detune = this.#freqToCents(frequency)
+            const detune = this.#freqToCents(frequency);
             this.#loopPlayer.play(playAt, detune);
+            this.#playingLoops.set(frequency, this.#loopPlayer);
         } else {
             this.#loopPlayer.play(playAt);
         }
     }
     
 
-    stop(stopAt=0) {
+    stop(stopAt=0, frequency=0) {
         if(this.#loopPlayer) {
-            this.#loopPlayer.stop(stopAt);
-            this.#loopPlayer = null;
+            if(frequency) {
+                const player = this.#playingLoops.get(frequency);
+                if(player) {
+                    player.stop(stopAt);
+                    this.#playingLoops.delete(frequency);
+                }
+            } else {
+                this.#loopPlayer.stop(stopAt);
+                this.#loopPlayer = null;
+            }
         }
     }
 
     playing() {
-        return Boolean(this.#loopPlayer);
+        return Boolean(this.#loopPlayer && this.#loopPlayer.isPlaying());
     }
     
     // tuning

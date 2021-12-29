@@ -2,12 +2,9 @@
 Primary Todos:
 
 Next Steps:
-- Source track library
-- Expose the clips behind tracks as their own entity that can be:
-  - modified (reloaded in the looper)
-  - cloned
-- MIDI or pitched composer interface of some kind
-  - https://developer.mozilla.org/en-US/docs/Web/API/Web_MIDI_API
+- Source track library (exists in simple form)
+
+
 - Visuals:
   - display info about buffers, clips, tracks, etc: length (samples and time), sampleRate
   - show a running "read-head" on displayed waveforms when they are running
@@ -15,6 +12,8 @@ Next Steps:
     - allow manipulation of the read-head
     
 Bugs:
+- !! After playing through MIDI, the selection window freezes up and changes/moves
+only after the next key is pressed. Weird. It works fine until the first keypress
 
 Thoughts:
 - could copyWithin() be used in some kind of cool recursive/fractaly way?
@@ -39,6 +38,10 @@ Looper/Cutter:
 Bugs:
 Features:
 - zoom
+
+LoopShop
+- gain
+- envelopes
 
 Ranger:
 Bugs:
@@ -94,16 +97,6 @@ Input/Output
 
 */
    
-// const audioSrc = 'audio/animals.mp3'
-// const audioSrc = 'audio/husky.wav'
-// const audioSrc = 'audio/stream.wav'
-// const audioSrc = 'audio/water-pouring.wav'
-// const audioSrc = 'audio/dope-drum-loop_C_major.wav'
-// const audioSrc = 'audio/talking.wav'
-// const audioSrc = 'audio/sharks1.wav'
-const audioSrc = 'audio/dungeons.wav'
-// const audioSrc = 'audio/chirp-2secs.wav'
-// const audioSrc = 'audio/bari1.wav'
 
 import {Library} from "./library.js"
 import {Looper} from "./looper.js"
@@ -176,7 +169,7 @@ function handleMIDIMessage(event) {
         const velocity = data[2];
 
         if(velocity == 0) {
-            _looperUI.stop();
+            _looperUI.stop(midiToHz(midiNote));
         } else {
             _looperUI.play(midiToHz(midiNote));
         }

@@ -45,8 +45,8 @@ export class LooperUI {
         this.playAnimation();
     }
 
-    stop() {
-        this.#looper.stop();
+    stop(frequency=0) {
+        this.#looper.stop(0, frequency);
     }
 
     loadLoop(loop, name) {
