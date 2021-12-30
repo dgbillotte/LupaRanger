@@ -25,11 +25,11 @@ export class LoopPlayer {
     #playStartSamples // for instrumentation if we want...
     #state = {};
 
-    constructor(audioContext, loop, downstreamChain) {
+    constructor(audioContext, loop, downstreamChain, state={}) {
         this.#audioContext = audioContext;
         this.#loop = loop;
         this.#downstreamChain = downstreamChain;
-        this.#state = {
+        this.#state = {...{
             loop: loop.loop,
             loopStart: loop.loopStart,
             loopEnd: loop.loopEnd,
@@ -37,11 +37,15 @@ export class LoopPlayer {
             startOffset: loop.startOffset,
             duration: loop.duration,
             // detune: ??? maybe
-        }
+        }, ...state};
+
     }
 
     get loopStart() { return this.#state.loopStart; }
     set loopStart(loopStart) {
+        if(this.#state.loopStart == this.#state.startOffset) {
+            this.#state.startOffset = loopStart;
+        }
         this.#state.loopStart = loopStart;
         if(this.#player) {
             this.#player.loopStart = loopStart;
@@ -93,6 +97,10 @@ export class LoopPlayer {
 
     get detune() {
         return this.#player.detune;
+    }
+
+    get state() {
+        return {...this.#state};
     }
 
     isPlaying() { return Boolean(this.#player); }

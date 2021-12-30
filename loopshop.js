@@ -110,31 +110,44 @@ export class LoopShopUI {
         if(! this.#envelope) {
             return buffer;
         }
-        const duration = this.#loopPlayer.__loop.audioBuffer.duration;
-        const pxToSamples = duration * this.#loopPlayer.__loop.audioBuffer.sampleRate / this.#canvas.width;
+        const duration = this.#loopPlayer.loopEnd - this.#loopPlayer.loopStart;
+        const sampleRate = this.#loopPlayer.__loop.audioBuffer.sampleRate;
+        const pxToSamples = duration * sampleRate / this.#canvas.width;
 
         // this is for an ADSR
+        const start = Math.floor(this.#loopPlayer.loopStart * sampleRate);
+        const end = Math.floor(this.#loopPlayer.loopEnd * sampleRate);
+
         const sustain = this.#envelope.sustain;
-        const attack = this.#envelope.attack * pxToSamples;
-        const attackInc = 1.0 / attack;
-        const decay = this.#envelope.decay * pxToSamples;
-        const decayInc = (1.0 - sustain) / decay;
-        const release = this.#envelope.release * pxToSamples;
-        const releaseInc = sustain / release;
         
+        const attackLength = this.#envelope.attack * pxToSamples;
+        const attackEnd = start + attackLength;
+        const attackInc = 1.0 / attackLength;
+
+        const decayLength = this.#envelope.decay * pxToSamples;
+        const decayEnd = attackEnd + decayLength;
+        const decayInc = (1.0 - sustain) / decayLength;
+        
+        const releaseLength = this.#envelope.release * pxToSamples;
+        const releaseStart = end - releaseLength;
+        const releaseInc = sustain / releaseLength;
+        
+
         let idx = 0;
         let gain = 0;
         return buffer.map(function(sample) {
-            let out = sample*gain;
-            // console.log('gain: ', gain);
-            if(idx < attack) {
-                gain += attackInc;
-            } else if(idx < attack + decay) {
-                gain -= decayInc;
-            } else if(idx < buffer.length - release) {
-                let a = 1;// gain stays the same
-            } else {
-                gain -= releaseInc;
+            let out = sample;
+            if(idx >= start && idx < end) {
+                out *= gain;
+                if(idx < attackEnd) {
+                    gain += attackInc;
+                } else if(idx < decayEnd) {
+                    gain -= decayInc;
+                } else if(idx < releaseStart) {
+                    let a = 1;// gain stays the same
+                } else {
+                    gain -= releaseInc;
+                }
             }
             idx++;
             return out;

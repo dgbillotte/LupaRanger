@@ -32,7 +32,8 @@ export class Looper {
     play(playAt=0, frequency=0) {
         if(frequency > 0) {
             const detune = this.#freqToCents(frequency);
-            const loopPlayer = new LoopPlayer(this.#audioContext, this.#currentLoop, this.#downstreamChain);
+            const lpState = this.#loopPlayer ? this.#loopPlayer.state : {};
+            const loopPlayer = new LoopPlayer(this.#audioContext, this.#currentLoop, this.#downstreamChain, lpState);
             loopPlayer.play(playAt, detune);
             this.#playingLoops.set(frequency, loopPlayer);
         } else {
