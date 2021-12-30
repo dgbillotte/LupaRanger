@@ -223,7 +223,7 @@ function init() {
 
     // setup the loopshop and UI
     const loopShopBusConnection = _bus.addChannel('LoopShop');
-    _loopShop = new LoopShop(loopShopBusConnection);
+    _loopShop = new LoopShop(_audioCtx, loopShopBusConnection);
     const loopShopHtmlRoot = document.getElementById('loopshop')
     _loopShopUI = new LoopShopUI(loopShopHtmlRoot, _loopShop);
     _looperUI.expander = _loopShopUI;

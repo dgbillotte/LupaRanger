@@ -628,6 +628,337 @@
                     "filename": "waveformView.js"
                 }
             ]
+        },
+        {
+            "version": "0.2.7",
+            "counttime": "2021-12-30 00:15:58",
+            "filesum": 44,
+            "codesum": 1881,
+            "commentsum": 306,
+            "blanksum": 393,
+            "statistics": {
+                ".html": {
+                    "code": 337,
+                    "comment": 3,
+                    "blank": 32
+                },
+                ".js": {
+                    "code": 1371,
+                    "comment": 284,
+                    "blank": 311
+                },
+                ".yml": {
+                    "code": 12,
+                    "comment": 0,
+                    "blank": 2
+                },
+                "": {
+                    "code": 3,
+                    "comment": 0,
+                    "blank": 1
+                },
+                ".css": {
+                    "code": 96,
+                    "comment": 19,
+                    "blank": 25
+                },
+                ".txt": {
+                    "code": 1,
+                    "comment": 0,
+                    "blank": 0
+                },
+                ".md": {
+                    "code": 35,
+                    "comment": 0,
+                    "blank": 19
+                },
+                ".py": {
+                    "code": 26,
+                    "comment": 0,
+                    "blank": 3
+                }
+            },
+            "filelist": [
+                {
+                    "blank": 1,
+                    "code": 3,
+                    "comment": 0,
+                    "filename": ".gitignore"
+                },
+                {
+                    "blank": 2,
+                    "code": 12,
+                    "comment": 0,
+                    "filename": ".gitlab-ci.yml"
+                },
+                {
+                    "blank": 23,
+                    "code": 123,
+                    "comment": 0,
+                    "filename": "adsrWidget.js"
+                },
+                {
+                    "blank": 3,
+                    "code": 24,
+                    "comment": 0,
+                    "filename": "audio-devices.html"
+                },
+                {
+                    "filename": "audio/animals.mp3",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "audio/bari1.wav",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "audio/bari2.wav",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "audio/chirp-2secs.wav",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "audio/dope-drum-loop_C_major.wav",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "audio/dungeons.wav",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "audio/husky.wav",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "audio/loopy.wav",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "audio/noise-half-sec.wav",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "audio/outfoxing.mp3",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "audio/sharks1.wav",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "audio/stream.wav",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "audio/talking.wav",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "audio/water-pouring.wav",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "filename": "audio/waves.wav",
+                    "isbinaryfile": true,
+                    "blank": 0,
+                    "code": 0,
+                    "comment": 0
+                },
+                {
+                    "blank": 35,
+                    "code": 92,
+                    "comment": 32,
+                    "filename": "bus.js"
+                },
+                {
+                    "blank": 1,
+                    "code": 13,
+                    "comment": 0,
+                    "filename": "colors.js"
+                },
+                {
+                    "blank": 7,
+                    "code": 36,
+                    "comment": 19,
+                    "filename": "dustbin.js"
+                },
+                {
+                    "blank": 0,
+                    "code": 5,
+                    "comment": 0,
+                    "filename": "helpers.js"
+                },
+                {
+                    "blank": 7,
+                    "code": 42,
+                    "comment": 0,
+                    "filename": "index.html"
+                },
+                {
+                    "blank": 8,
+                    "code": 33,
+                    "comment": 0,
+                    "filename": "LaunchKey37Guide.md"
+                },
+                {
+                    "blank": 7,
+                    "code": 16,
+                    "comment": 10,
+                    "filename": "library.js"
+                },
+                {
+                    "blank": 10,
+                    "code": 173,
+                    "comment": 2,
+                    "filename": "loopa-ranger.html"
+                },
+                {
+                    "blank": 48,
+                    "code": 155,
+                    "comment": 132,
+                    "filename": "loopa-ranger.js"
+                },
+                {
+                    "blank": 24,
+                    "code": 132,
+                    "comment": 16,
+                    "filename": "looper.js"
+                },
+                {
+                    "blank": 16,
+                    "code": 102,
+                    "comment": 3,
+                    "filename": "looperUI.js"
+                },
+                {
+                    "blank": 18,
+                    "code": 90,
+                    "comment": 26,
+                    "filename": "loopPlayer.js"
+                },
+                {
+                    "blank": 34,
+                    "code": 158,
+                    "comment": 12,
+                    "filename": "loopshop.js"
+                },
+                {
+                    "blank": 11,
+                    "code": 82,
+                    "comment": 0,
+                    "filename": "midi.html"
+                },
+                {
+                    "blank": 0,
+                    "code": 1,
+                    "comment": 0,
+                    "filename": "public/foo.txt"
+                },
+                {
+                    "blank": 14,
+                    "code": 18,
+                    "comment": 20,
+                    "filename": "rack.js"
+                },
+                {
+                    "blank": 41,
+                    "code": 188,
+                    "comment": 5,
+                    "filename": "ranger.js"
+                },
+                {
+                    "blank": 11,
+                    "code": 2,
+                    "comment": 0,
+                    "filename": "README.md"
+                },
+                {
+                    "blank": 1,
+                    "code": 16,
+                    "comment": 1,
+                    "filename": "rxjs.html"
+                },
+                {
+                    "blank": 28,
+                    "code": 177,
+                    "comment": 0,
+                    "filename": "select-window.js"
+                },
+                {
+                    "blank": 5,
+                    "code": 22,
+                    "comment": 0,
+                    "filename": "show.css"
+                },
+                {
+                    "blank": 1,
+                    "code": 16,
+                    "comment": 9,
+                    "filename": "show.js"
+                },
+                {
+                    "blank": 20,
+                    "code": 74,
+                    "comment": 19,
+                    "filename": "style.css"
+                },
+                {
+                    "blank": 3,
+                    "code": 26,
+                    "comment": 0,
+                    "filename": "test.py"
+                },
+                {
+                    "blank": 14,
+                    "code": 50,
+                    "comment": 0,
+                    "filename": "waveformView.js"
+                }
+            ]
         }
     ]
 }

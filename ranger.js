@@ -2,6 +2,7 @@ import { SelectWindow} from "./select-window.js";
 
 
 
+const MIDDLE_C = 261.63
 export class Loop {
     #uuid;
     #baseFrequency
@@ -15,8 +16,11 @@ export class Loop {
     loopEnd
     startOffset
     duration; // if looped, how long to play for. 0 -> infinite loop (until stop() is called)
+    preGain = 1.0;
+    envelope
 
-    constructor(audioBuffer, baseFrequency=261.63, playbackRate=1, opts={}) {
+    
+    constructor(audioBuffer, baseFrequency=MIDDLE_C, playbackRate=1, opts={}) {
         this.#uuid = crypto.randomUUID();
         this.audioBuffer = audioBuffer;
         this.playbackRate = playbackRate;

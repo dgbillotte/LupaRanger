@@ -5,10 +5,12 @@ import { LupaColors } from './colors.js'
 
 
 export class LoopShop {
+    audioCtx
     #currentLoop = null;
     // #downstreamChain;
     #looper
     constructor(audioCtx, downstreamChain) {
+        this.audioCtx = audioCtx;
         // this.#downstreamChain = downstreamChain;
         this.#looper = new Looper(audioCtx, downstreamChain);
     }
@@ -106,6 +108,48 @@ export class LoopShopUI {
         return newBuffer;
     }
 
+    // createProcessingNodes() {
+    //     return function(startTime) {
+    //         const gain = this.createGainNode();
+    //         const adsr = this.createADSRNode(startTime);
+    //         gain.connect(adsr);
+            
+    //         // return gain;
+    //     }.bind(this);
+    // }
+    
+    // createGainNode() {
+    //     const gain = this.#loopShop.audioCtx.createGain();
+    //     gain.gain.value = this.loopGain;
+    //     return gain;
+    // }
+
+    // createADSRNode(startTime) {
+    //     const duration = this.#loopPlayer.loopEnd - this.#loopPlayer.loopStart;
+    //     const sampleRate = this.#loopPlayer.__loop.audioBuffer.sampleRate;
+    //     const pxToSecs = duration / this.#canvas.width;
+        
+    //     const sustain = this.#envelope.sustain;
+        
+    //     const attackLength = this.#envelope.attack * pxToSecs;
+    //     const attackEnd = startTime + attackLength;
+    //     const decayLength = this.#envelope.decay * pxToSecs;
+    //     const decayEnd = attackEnd + decayLength;
+    //     const releaseLength = this.#envelope.release * pxToSecs;
+    //     const releaseEnd = startTime + duration;
+    //     const releaseStart = releaseEnd - releaseLength;
+
+    //     const adsr = this.#loopShop.audioCtx.createGain();
+    //     adsr.gain
+    //         .setValueAtTime(0, startTime)
+    //         .linearRampToValueAtTime(1, attackEnd)
+    //         .linearRampToValueAtTime(sustain, decayEnd)
+    //         .setValueAtTime(sustain, releaseStart)
+    //         .linearRampToValueAtTime(0, releaseEnd);
+        
+    //     return adsr;
+    // }
+
     #applyEnvelope(buffer) {
         if(! this.#envelope) {
             return buffer;
@@ -131,7 +175,6 @@ export class LoopShopUI {
         const releaseLength = this.#envelope.release * pxToSamples;
         const releaseStart = end - releaseLength;
         const releaseInc = sustain / releaseLength;
-        
 
         let idx = 0;
         let gain = 0;
@@ -173,6 +216,7 @@ export class LoopShopUI {
             if(currentValue != event.target.value) {
                 this.#htmlRoot.querySelector('.clip-gain-value').value = event.target.value;
                 this.draw();
+                this.#loopPlayer.preGain = parseFloat(event.target.value);
             }
         }.bind(this));
         this.#htmlRoot.querySelector('.clip-gain-value').addEventListener('input', function(event) {
@@ -180,6 +224,7 @@ export class LoopShopUI {
             if(currentValue != event.target.value) {
                 this.#htmlRoot.querySelector('#clip-gain').value = event.target.value;
                 this.draw();
+                this.#loopPlayer.preGain = parseFloat(event.target.value);
             }
         }.bind(this));
 

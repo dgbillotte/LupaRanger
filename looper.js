@@ -35,6 +35,10 @@ export class Looper {
             const lpState = this.#loopPlayer ? this.#loopPlayer.state : {};
             const loopPlayer = new LoopPlayer(this.#audioContext, this.#currentLoop, this.#downstreamChain, lpState);
             loopPlayer.play(playAt, detune);
+            const alreadyPlaying = this.#playingLoops.get(frequency);
+            if(alreadyPlaying) {
+                alreadyPlaying.stop();
+            }
             this.#playingLoops.set(frequency, loopPlayer);
         } else {
             this.#loopPlayer.play(playAt);

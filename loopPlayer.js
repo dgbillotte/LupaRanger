@@ -36,6 +36,7 @@ export class LoopPlayer {
             playbackRate: loop.playbackRate,
             startOffset: loop.startOffset,
             duration: loop.duration,
+            preGain: audioContext.createGain(),
             // detune: ??? maybe
         }, ...state};
 
@@ -87,7 +88,19 @@ export class LoopPlayer {
             this.#player.detune.value = this.#loop.detune;
         }
 
-        this.#player.connect(this.#downstreamChain);
+        let foo = this.#player;
+
+        this.state.preGain.gain.value = this.#loop.preGain;
+        foo = foo.connect(this.state.preGain);
+        
+
+        // if(this.#loop.envelope) {
+        //     foo = foo.connect(this.#loop.envelope);
+        // }
+
+        foo.connect(this.#downstreamChain);
+
+
         this.#playStartSamples = Math.floor(this.#audioContext.currentTime * this.#loop.audioBuffer.sampleRate);              
         this.#player.start(startAt, this.#state.startOffset); // use the offset here to start at the right time
         if(this.#state.duration) {
@@ -103,14 +116,18 @@ export class LoopPlayer {
         return {...this.#state};
     }
 
+    set preGain(preGain) {
+        this.#state.preGain.gain.value = preGain;
+    }
+
     isPlaying() { return Boolean(this.#player); }
     
     stop(stopAt=0) {
         if(this.#player) {
-            // todo: if there is an envelope attached active the release
+            // todo: if there is an envelope attached activate the release
             // and then schedule to stop at end of release
             this.#player.stop(stopAt);
-            this.#player.disconnect(this.#downstreamChain);
+            this.#player.disconnect();//this.#downstreamChain);
             this.#player = null;
         }
     }
