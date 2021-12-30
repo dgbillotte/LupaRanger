@@ -1,12 +1,23 @@
 /*
-Primary Todos:
+Philosophies of the Project (to remind myself):
+- the end product of each stage/tool should be consumable
+  by the other tools. The Clip/Loop is the basis for this.
+- in the movement of a loop through the system, priority is
+  given to smooth movement through the workflow and simple
+  code to that aim. Therefore, concern is not given to saving
+  previous state. Experiments should be performed on copies.
+
+
 
 Current Focus: Get Loopshop fully integrated with Cutter
 
 Next Steps:
 - finish up 1st round of loopshop(LS):
   - LS should realtime sync with the selection in loop-cutter
-- Source track library (exists in simple form) 
+  - add a little padding at top of display so that clipping is visible
+- Source track library (exists in simple form):
+  - edit name
+  - copy 
 
 
 - Visuals:
@@ -20,7 +31,7 @@ Bugs:
 
 Thoughts:
 - could copyWithin() be used in some kind of cool recursive/fractaly way?
-- start with a buffer of noise and use copyWithin() to slowly evolove order
+- start with a buffer of noise and use copyWithin() to slowly evolve order
 
 Features:
 - Add controls:
@@ -215,6 +226,7 @@ function init() {
     _loopShop = new LoopShop(loopShopBusConnection);
     const loopShopHtmlRoot = document.getElementById('loopshop')
     _loopShopUI = new LoopShopUI(loopShopHtmlRoot, _loopShop);
+    _looperUI.expander = _loopShopUI;
 
 
     // setup the arranger

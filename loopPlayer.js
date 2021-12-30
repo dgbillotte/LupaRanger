@@ -64,6 +64,10 @@ export class LoopPlayer {
         }
     }
 
+    // this is bad, um-k? this is strictly scaffolding and 
+    // needs to be replaced with the proper abstraction / access
+    get __loop() { return this.#loop; }
+
     play(startAt=0, detune=null) {
         this.#player = new AudioBufferSourceNode(this.#audioContext, {
             buffer: this.#loop.audioBuffer,

@@ -13,6 +13,7 @@ export class LooperUI {
     #waveformView
     #selection
     #selectionOn = true;
+    #expander = null
 
 
     constructor(htmlRoot, looper) {
@@ -29,6 +30,15 @@ export class LooperUI {
         }.bind(this))
     }
 
+    set expander(expander) {
+        this.#expander = expander;
+        // connect the current loop to the expander
+        const loopPlayer = this.#looper.loopPlayer;
+        if(loopPlayer) {
+            expander.loadLoop(loopPlayer)
+        }
+    }
+
     #resize() {
         this.#canvas.width = this.#canvas.parentElement.offsetWidth;
         this.draw();
@@ -38,6 +48,8 @@ export class LooperUI {
         this.#looper.reClip(start, end, this.#canvasCtx.canvas.width);
         this.setLooperHeader();
         this.draw();
+        // need to trigger clipshop to redraw here
+        this.#expander.draw();
     }
 
     play(frequency=0) {
@@ -51,6 +63,10 @@ export class LooperUI {
 
     loadLoop(loop, name) {
         this.#looper.loadLoop(loop);
+        // get loopPlayer from looper and pass it to the expander, if it exists
+        if(this.#expander) {
+            this.#expander.loadLoop(this.#looper.loopPlayer);
+        }
         this.setLooperHeader();
         this.draw();
     }

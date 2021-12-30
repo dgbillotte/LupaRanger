@@ -81,6 +81,8 @@ export class Looper {
         }
     }
 
+    get loopPlayer() { return this.#loopPlayer; }
+
     // tuning
     #freqToCents(targetFreq) {
         return (1200/Math.LN2) * (Math.log(targetFreq) - this.#currentLoop.baseLog);

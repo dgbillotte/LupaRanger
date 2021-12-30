@@ -15,7 +15,7 @@ export class WaveformView {
 
 
 
-    draw(waveData) {
+    draw(waveData, start=0, length=0) {
         const width = this.#canvasCtx.canvas.width;
         const height = this.#canvasCtx.canvas.height;
         this.#canvasCtx.clearRect(0, 0, width, height);
@@ -27,12 +27,13 @@ export class WaveformView {
         this.#canvasCtx.strokeStyle = this.#traceColor;
         this.#canvasCtx.beginPath();
         
-        const sliceWidth = width * 1.0 / waveData.length;
-        let x = 0;
+        const lengthCalcd = length ? length : waveData.length - start;
+        const sliceWidth = width * 1.0 / lengthCalcd;
         
+        let x = 0;
         const center = height / 2;
-        for(let i = 0; i < waveData.length; i++) {
-            const y = center + (waveData[i] * center);
+        for(let i = 0; i < lengthCalcd; i++) {
+            const y = center + (waveData[i+start] * center);
             
             if(i === 0) {
                 this.#canvasCtx.moveTo(x, y);

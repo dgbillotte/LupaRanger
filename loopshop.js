@@ -45,6 +45,7 @@ export class LoopShopUI {
     #clipped = false;
     #envelope = null;
     #loop = null;
+    #loopPlayer = null
     // #isActive = false;
 
     constructor(htmlRoot, loopShop) {
@@ -59,16 +60,16 @@ export class LoopShopUI {
         this.#wireUpUI();
     }
     
-    
-    loadLoop(loop) {
-        this.#loop = loop;
-        this.#loopShop.loadLoop(loop);
+
+    loadLoop(loopPlayer) {
+        this.#loopPlayer = loopPlayer;
+        this.#loopShop.loadLoop(loopPlayer.__loop);
         this.draw();
     }
     
 
     draw() {
-        this.#drawWaveform(this.#loop.audioBuffer.getChannelData(0));
+        this.#drawWaveform(this.#loopPlayer.__loop.audioBuffer.getChannelData(0));
         if(this.#envelope) {
             this.#envelope.draw();
         }
@@ -77,7 +78,11 @@ export class LoopShopUI {
     #drawWaveform(bufferData) {
         let buffer = this.#applyGain(bufferData);
         buffer = this.#applyEnvelope(buffer);
-        this.#waveformView.draw(buffer);
+        // calculate start/stop
+        const sampleRate = this.#loopPlayer.__loop.audioBuffer.sampleRate
+        const start = Math.floor(this.#loopPlayer.loopStart * sampleRate);
+        const length = Math.floor((this.#loopPlayer.loopEnd * sampleRate) - start);
+        this.#waveformView.draw(buffer, start, length);
     }
 
     #applyGain(buffer) {
@@ -105,8 +110,8 @@ export class LoopShopUI {
         if(! this.#envelope) {
             return buffer;
         }
-        const duration = this.#loop.audioBuffer.duration;
-        const pxToSamples = duration * this.#loop.audioBuffer.sampleRate / this.#canvas.width;
+        const duration = this.#loopPlayer.__loop.audioBuffer.duration;
+        const pxToSamples = duration * this.#loopPlayer.__loop.audioBuffer.sampleRate / this.#canvas.width;
 
         // this is for an ADSR
         const sustain = this.#envelope.sustain;
