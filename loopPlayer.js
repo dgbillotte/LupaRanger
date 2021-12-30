@@ -37,6 +37,7 @@ export class LoopPlayer {
             startOffset: loop.startOffset,
             duration: loop.duration,
             preGain: audioContext.createGain(),
+            envelope: null,
             // detune: ??? maybe
         }, ...state};
 
@@ -69,6 +70,14 @@ export class LoopPlayer {
         }
     }
 
+    get loopPlay() { return this.#state.loop; }
+    set loopPlay(loopPlay) {
+        this.#state.loop = Boolean(loopPlay);
+        if(this.#player) {
+            this.#player.loop = this.#state.loop;
+        }
+    }
+
     // this is bad, um-k? this is strictly scaffolding and 
     // needs to be replaced with the proper abstraction / access
     get __loop() { return this.#loop; }
@@ -81,6 +90,10 @@ export class LoopPlayer {
             loopEnd: this.#state.loopEnd,
             playbackRate: this.#state.playbackRate
         });
+
+        // this.#player.addEventListener('ended', function(event) {
+        //     // add ended handler here to do any cleanup when a loop ends
+        // });
         
         if(detune) {
             this.#player.detune.value = detune;
@@ -118,6 +131,17 @@ export class LoopPlayer {
 
     set preGain(preGain) {
         this.#state.preGain.gain.value = preGain;
+    }
+
+    set adsr(adsr) {
+        const env = this.#state.envelope;
+        env.type = 'adsr';
+        for(let field of ['attack', 'decay', 'sustain', 'release']) {
+            const val = adsr[field];
+            if(val && typeof(val) == 'number') {
+                env[field] = val;
+            }
+        }
     }
 
     isPlaying() { return Boolean(this.#player); }

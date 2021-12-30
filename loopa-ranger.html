@@ -95,11 +95,12 @@
 						
 						<section class="controls">
 							<section class="transport">
-								<button data-playing="false" class="transport-play"><span>Play/Pause</span></button>
-								
+								<button class="transport-play">Play</button>
+								<button class="transport-stop">Stop</button>
+								<label for="loopCheckbox">Loop?</label>
+								<input type="checkbox" id="loopCheckbox">
 								<input type="range" id="playback-speed" class="slider playback-speed" min="0" max="5" value="1.0" step="0.01" />
 								<label for="playback-speed">Playback Speed</label>
-								<button class="kill-zombies">Kill Zombies</button>
 							</section>
 							<section class="clip-info">
 							</section>

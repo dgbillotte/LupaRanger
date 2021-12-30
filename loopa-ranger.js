@@ -239,19 +239,23 @@ function init() {
 
 
 // Button to toggle Looper Play/Pause
+document.querySelector('#looper .transport-stop').addEventListener('click', function() {
+    _looperUI.stop();
+});
 document.querySelector('#looper .transport-play').addEventListener('click', function() {
     if(! _audioCtx) {
         return; 
     }
+    _looperUI.play();
     
-    if (this.dataset.playing === 'false') {
-        this.dataset.playing = 'true';
-        _looperUI.play();
+    // if (this.dataset.playing === 'false') {
+    //     this.dataset.playing = 'true';
+    //     _looperUI.play();
       
-    } else if (this.dataset.playing === 'true') {
-        this.dataset.playing = 'false';
-        _looperUI.stop();
-    }
+    // } else if (this.dataset.playing === 'true') {
+    //     this.dataset.playing = 'false';
+    //     _looperUI.stop();
+    // }
 });
 
 // Button to add current loop as a track in ranger
@@ -307,7 +311,7 @@ function loadBuffer(buffer, name) {
         .then(function(audioBuffer) {
             addFileToUI(audioBuffer, name);
             const loop = _library.loadAudioBuffer(audioBuffer, name);
-            loop.loop = true;
+            // loop.loop = true;
             _looperUI.loadLoop(loop);
     });  
 }

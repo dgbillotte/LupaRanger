@@ -17,7 +17,16 @@ export class Loop {
     startOffset
     duration; // if looped, how long to play for. 0 -> infinite loop (until stop() is called)
     preGain = 1.0;
-    envelope
+    envelope = {type:'none'};
+    /*
+     An ADSR might look like: {
+         type: 'adsr',
+         attack: 0.012,
+         decay: 0.13
+         sustain: 0.7
+         release: 0.2
+     }
+     */
 
     
     constructor(audioBuffer, baseFrequency=MIDDLE_C, playbackRate=1, opts={}) {

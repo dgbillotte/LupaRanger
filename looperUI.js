@@ -24,10 +24,12 @@ export class LooperUI {
         this.#looper = looper;
         this.#waveformView = new WaveformView(this.#canvasCtx, DISPLAY_BACKGROUND, WAVEFORM_COLOR);
         this.#selection = new SelectWindow(this.#canvasCtx, 0, this.#canvas.height, this.#canvas.width, this.reclipHandler.bind(this));
+
+        // wire up event handlers
         window.addEventListener('resize', this.#resize.bind(this));
-        this.#htmlRoot.querySelector('button.kill-zombies').addEventListener('click', function() {
-            this.#looper.killZombies();
-        }.bind(this))
+        htmlRoot.querySelector('#loopCheckbox').addEventListener('click', function(event) {
+            this.#looper.loopPlayer.loopPlay = event.target.checked;
+        }.bind(this));
     }
 
     set expander(expander) {

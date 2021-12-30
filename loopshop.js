@@ -210,7 +210,22 @@ export class LoopShopUI {
         // window resize
         window.addEventListener('resize', this.#resize.bind(this));
 
-        // clip-gain slider
+        // clip-gain slider/text-box
+        this.#wireUpClipGain();
+
+        // ADSR Button
+        this.#htmlRoot.querySelector('button.adsr').addEventListener('click', function() {
+            if(this.#envelope) {
+                this.#envelope = null;
+            } else {
+                this.#envelope = new ADSRWidget(this.#canvasCtx, this.draw.bind(this));
+            }
+            this.draw();
+        }.bind(this));
+
+    }
+
+    #wireUpClipGain() {
         this.#htmlRoot.querySelector('#clip-gain').addEventListener('input', function(event) {
             const currentValue = this.#htmlRoot.querySelector('.clip-gain-value').value;
             if(currentValue != event.target.value) {
@@ -227,17 +242,6 @@ export class LoopShopUI {
                 this.#loopPlayer.preGain = parseFloat(event.target.value);
             }
         }.bind(this));
-
-        // ADSR Button
-        this.#htmlRoot.querySelector('button.adsr').addEventListener('click', function() {
-            if(this.#envelope) {
-                this.#envelope = null;
-            } else {
-                this.#envelope = new ADSRWidget(this.#canvasCtx, this.draw.bind(this));
-            }
-            this.draw();
-        }.bind(this));
-
     }
 
     #resize() {

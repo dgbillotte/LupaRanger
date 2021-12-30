@@ -29,7 +29,7 @@ export class Looper {
         }.bind(this));
     }
 
-    play(playAt=0, frequency=0) {
+    play(playAt=0, frequency=0, opts=null) {
         if(frequency > 0) {
             const detune = this.#freqToCents(frequency);
             const lpState = this.#loopPlayer ? this.#loopPlayer.state : {};
