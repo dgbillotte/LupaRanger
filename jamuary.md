@@ -7,7 +7,8 @@
 - orion
 - Elton 
 - night rider's lament 
-- 
+- Terrance McKenna or other head
+- Misfits
 
 ### Prompts/Themes:
 - produce piece from single input sample/track

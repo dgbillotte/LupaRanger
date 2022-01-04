@@ -4,58 +4,31 @@ import { ADSRWidget } from './adsrWidget.js'
 import { LupaColors } from './colors.js'
 
 
-export class LoopShop {
-    audioCtx
-    #currentLoop = null;
-    // #downstreamChain;
-    #looper
-    constructor(audioCtx, downstreamChain) {
-        this.audioCtx = audioCtx;
-        // this.#downstreamChain = downstreamChain;
-        this.#looper = new Looper(audioCtx, downstreamChain);
-    }
-
-    play() {
-
-    }
-
-    stop() {
-
-    }
-
-    // reset() {
-
-    // }
-
-    get bufferData() {
-        if(this.#currentLoop) {
-            return this.#currentLoop.audioBuffer;
-        }
-        return null;
-    }
-
-    loadLoop(loop) {
-        this.#currentLoop = loop;
-    }
-}
+// export class LoopShop {
+//     audioCtx
+//     #currentLoop = null;
+//     // #downstreamChain;
+//     #looper
+//     constructor(audioCtx, downstreamChain) {
+//         this.audioCtx = audioCtx;
+//         // this.#downstreamChain = downstreamChain;
+//     }
+// }
 export class LoopShopUI {
     #htmlRoot
     #canvas
     #canvasCtx
-    #loopShop
     #waveformView
     #clipped = false;
     #envelope = null;
-    #loop = null;
     #loopPlayer = null
     // #isActive = false;
 
-    constructor(htmlRoot, loopShop) {
+    constructor(htmlRoot) {
         this.#htmlRoot = htmlRoot;
         this.#canvas = htmlRoot.querySelector('canvas.waveform');
         this.#canvas.width = this.#canvas.parentElement.offsetWidth;
         this.#canvasCtx = this.#canvas.getContext('2d');
-        this.#loopShop = loopShop;
         const foreground = LupaColors.get('SHOP_WAVEFORM_COLOR');
         const background = LupaColors.get('SHOP_WAVEFORM_BACKGROUND')
         this.#waveformView = new WaveformView(this.#canvasCtx, background, foreground);
@@ -65,13 +38,12 @@ export class LoopShopUI {
 
     loadLoop(loopPlayer) {
         this.#loopPlayer = loopPlayer;
-        this.#loopShop.loadLoop(loopPlayer.__loop);
         this.draw();
     }
     
 
     draw() {
-        this.#drawWaveform(this.#loopPlayer.__loop.audioBuffer.getChannelData(0));
+        this.#drawWaveform(this.#loopPlayer.sampleData);
         if(this.#envelope) {
             this.#envelope.draw();
         }
@@ -81,7 +53,7 @@ export class LoopShopUI {
         let buffer = this.#applyGain(bufferData);
         buffer = this.#applyEnvelope(buffer);
         // calculate start/stop
-        const sampleRate = this.#loopPlayer.__loop.audioBuffer.sampleRate
+        const sampleRate = this.#loopPlayer.sampleRate
         const start = Math.floor(this.#loopPlayer.loopStart * sampleRate);
         const length = Math.floor((this.#loopPlayer.loopEnd * sampleRate) - start);
         this.#waveformView.draw(buffer, start, length);
@@ -124,38 +96,30 @@ export class LoopShopUI {
     //     return gain;
     // }
 
-    // createADSRNode(startTime) {
-    //     const duration = this.#loopPlayer.loopEnd - this.#loopPlayer.loopStart;
-    //     const sampleRate = this.#loopPlayer.__loop.audioBuffer.sampleRate;
-    //     const pxToSecs = duration / this.#canvas.width;
+    get adsrParams() {
+        const duration = this.#loopPlayer.loopEnd - this.#loopPlayer.loopStart;
+        const pxToSecs = duration / this.#canvas.width;
         
-    //     const sustain = this.#envelope.sustain;
-        
-    //     const attackLength = this.#envelope.attack * pxToSecs;
-    //     const attackEnd = startTime + attackLength;
-    //     const decayLength = this.#envelope.decay * pxToSecs;
-    //     const decayEnd = attackEnd + decayLength;
-    //     const releaseLength = this.#envelope.release * pxToSecs;
-    //     const releaseEnd = startTime + duration;
-    //     const releaseStart = releaseEnd - releaseLength;
+        const sustain = this.#envelope.sustain;
+        const attackLength = this.#envelope.attack * pxToSecs;
+        const decayLength = this.#envelope.decay * pxToSecs;
+        const releaseLength = this.#envelope.release * pxToSecs;
 
-    //     const adsr = this.#loopShop.audioCtx.createGain();
-    //     adsr.gain
-    //         .setValueAtTime(0, startTime)
-    //         .linearRampToValueAtTime(1, attackEnd)
-    //         .linearRampToValueAtTime(sustain, decayEnd)
-    //         .setValueAtTime(sustain, releaseStart)
-    //         .linearRampToValueAtTime(0, releaseEnd);
-        
-    //     return adsr;
-    // }
+        return {
+            type: 'adsr',
+            attack: attackLength,
+            decay: decayLength,
+            sustain: sustain,
+            release: releaseLength
+        }
+    }
 
     #applyEnvelope(buffer) {
         if(! this.#envelope) {
             return buffer;
         }
         const duration = this.#loopPlayer.loopEnd - this.#loopPlayer.loopStart;
-        const sampleRate = this.#loopPlayer.__loop.audioBuffer.sampleRate;
+        const sampleRate = this.#loopPlayer.sampleRate;
         const pxToSamples = duration * sampleRate / this.#canvas.width;
 
         // this is for an ADSR
@@ -223,6 +187,11 @@ export class LoopShopUI {
             this.draw();
         }.bind(this));
 
+    }
+
+    #onEnvelopeChange(event) {
+        this.#loopPlayer.adsr = this.adsrParams();
+        this.draw();
     }
 
     #wireUpClipGain() {

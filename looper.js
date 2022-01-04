@@ -53,16 +53,14 @@ export class Looper {
      - frequency provided could also be monophonic, always playing the last pitch it received, meh...
      */
     stop(stopAt=0, frequency=0) {
-        if(this.#loopPlayer) {
-            if(frequency) {
-                const player = this.#playingLoops.get(frequency);
-                if(player) {
-                    player.stop(stopAt);
-                    this.#playingLoops.delete(frequency);
-                }
-            } else {
-                this.#loopPlayer.stop(stopAt);
+        if(frequency) {
+            const player = this.#playingLoops.get(frequency);
+            if(player) {
+                player.stop(stopAt);
+                this.#playingLoops.delete(frequency);
             }
+        } else if(this.#loopPlayer) {
+            this.#loopPlayer.stop(stopAt);
         }
     }
 

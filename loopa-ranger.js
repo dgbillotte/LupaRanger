@@ -8,13 +8,18 @@ Philosophies of the Project (to remind myself):
   previous state. Experiments should be performed on copies.
 
 
+Bugs:
+- in one-shot mode, the pointer keeps looping after the loop is over
+- hitting play twice (without stop) causes a zombie player.
+  - options: ignore, pause, restart
+- with active selection, if loop is not checked, the entire clip is played,
+  not just the selection. If loop is checked it works correctly
 
 Current Focus: Get Loopshop fully integrated with Cutter
 
 Next Steps:
 - finish up 1st round of loopshop(LS):
   - LS should realtime sync with the selection in loop-cutter
-  - add a little padding at top of display so that clipping is visible
 - Source track library (exists in simple form):
   - edit name
   - copy 
@@ -26,7 +31,6 @@ Next Steps:
     - display info about read-head position
     - allow manipulation of the read-head
     
-Bugs:
 
 
 Thoughts:
@@ -115,7 +119,7 @@ Input/Output
 import {Library} from "./library.js"
 import {Looper} from "./looper.js"
 import {LooperUI} from "./looperUI.js"
-import {LoopShop, LoopShopUI} from "./loopshop.js"
+import {LoopShopUI} from "./loopshop.js"
 import {Loop, Ranger, Track} from "./ranger.js"
 import {SystemBus} from "./bus.js"
 
@@ -123,7 +127,7 @@ import {SystemBus} from "./bus.js"
 let _audioCtx;
 let _superLooper;
 let _looperUI;
-let _loopShop;
+// let _loopShop;
 let _loopShopUI;
 let _ranger;
 let _bus;
@@ -222,10 +226,10 @@ function init() {
     _looperUI = new LooperUI(looperHtmlRoot, _superLooper);
 
     // setup the loopshop and UI
-    const loopShopBusConnection = _bus.addChannel('LoopShop');
-    _loopShop = new LoopShop(_audioCtx, loopShopBusConnection);
+    // const loopShopBusConnection = _bus.addChannel('LoopShop');
+    // _loopShop = new LoopShop(_audioCtx, loopShopBusConnection);
     const loopShopHtmlRoot = document.getElementById('loopshop')
-    _loopShopUI = new LoopShopUI(loopShopHtmlRoot, _loopShop);
+    _loopShopUI = new LoopShopUI(loopShopHtmlRoot);
     _looperUI.expander = _loopShopUI;
 
 

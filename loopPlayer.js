@@ -24,6 +24,7 @@ export class LoopPlayer {
     #downstreamChain
     #playStartSamples // for instrumentation if we want...
     #state = {};
+    #envelopeNode
 
     constructor(audioContext, loop, downstreamChain, state={}) {
         this.#audioContext = audioContext;
@@ -36,13 +37,119 @@ export class LoopPlayer {
             playbackRate: loop.playbackRate,
             startOffset: loop.startOffset,
             duration: loop.duration,
-            preGain: audioContext.createGain(),
-            envelope: null,
+            preGain: audioContext.createGain(), // *should* be able to get preGain from the loop
+            envelope: loop.envelope,
             // detune: ??? maybe
         }, ...state};
 
     }
 
+
+    /*
+     * --------- Playing Related ----------------------------------------------
+     */
+    play(startAt=0, detune=null) {
+        this.#player = new AudioBufferSourceNode(this.#audioContext, {
+            buffer: this.#loop.audioBuffer,
+            loop: true, // loopStart/End don't work without this, so need to stop after one play below
+            loopStart:  this.#state.loopStart,
+            loopEnd: this.#state.loopEnd,
+            playbackRate: this.#state.playbackRate
+        });
+
+        this.#player.addEventListener('ended', function(event) {
+            // add ended handler here to do any cleanup when a loop ends
+            this.stop();
+            console.log('loop ended');
+        }.bind(this));
+       
+        
+        if(detune) {
+            this.#player.detune.value = detune;
+        } else {
+            this.#player.detune.value = this.#loop.detune;
+        }
+
+        let nodeChain = this.#player;
+
+        this.state.preGain.gain.value = this.#loop.preGain;
+        nodeChain = nodeChain.connect(this.state.preGain);
+        
+
+        const clipDuration = this.loopEnd - this.loopStart;
+        let startEnvelope = () => null;
+        if(this.#state.envelope && this.#state.envelope.type == 'adsr') {
+            if(! this.#envelopeNode) {
+                this.#envelopeNode = this.#audioContext.createGain();
+            }
+            
+            startEnvelope = function(startAt) {
+                const attackEnd = startAt + this.#state.envelope.attack;
+                const decayEnd = attackEnd + this.#state.envelope.decay;
+                const sustain = this.#state.envelope.sustain
+                const releaseEnd = startAt + clipDuration;
+                const releaseStart = releaseEnd - this.#state.envelope.release;
+                this.#envelopeNode.gain
+                    .setValueAtTime(0, startAt)
+                    .linearRampToValueAtTime(1, attackEnd)
+                    .linearRampToValueAtTime(sustain, decayEnd)
+                    .setValueAtTime(sustain, releaseStart)
+                    .linearRampToValueAtTime(0, releaseEnd);
+            }.bind(this);
+
+            nodeChain = nodeChain.connect(this.#envelopeNode);
+        }
+        nodeChain.connect(this.#downstreamChain);
+
+
+        this.#playStartSamples = Math.floor(this.#audioContext.currentTime * this.#loop.audioBuffer.sampleRate);              
+        this.#player.start(startAt, this.#state.startOffset); // use the offset here to start at the right time
+        startEnvelope(startAt);
+        if(! this.#state.loop) {
+            const start = startAt > 0 ? startAt : this.#audioContext.currentTime;
+            this.#player.stop(start + clipDuration);
+            console.log('stopping in ', start + clipDuration, ' seconds');
+        } else if(this.#state.duration) {
+            this.#player.stop(this.#state.duration);
+        }
+    }
+    
+    stop(stopAt=0) {
+        if(this.#player) {
+            // todo: if there is an envelope attached activate the release
+            // and then schedule to stop at end of release
+            this.#player.stop(stopAt);
+            this.#player.disconnect();//this.#downstreamChain);
+            this.#player = null;
+        }
+    }
+
+    get detune() { return this.#player.detune; }
+    
+    get sampleRate() { return this.#loop.audioBuffer.sampleRate; }
+    
+    get sampleData() { return this.#loop.audioBuffer.getChannelData(0); }
+
+    isPlaying() { return Boolean(this.#player); }
+
+    // todo: this is not accurate if a startOffset other than loopStart is used.
+    // it should be pretty simple to add or subtract the difference off of the beginning
+    currentSampleIndex() {
+        if(this.#player) {
+            const sampleRate = this.#loop.audioBuffer.sampleRate;
+            const nowSamples = Math.floor(this.#audioContext.currentTime * sampleRate);
+            const samplesSinceStart = nowSamples - this.#playStartSamples;
+            const loopStartSamples = this.#player.loopStart * sampleRate;
+            const clipLengthSamples = Math.floor((this.#player.loopEnd * sampleRate) - loopStartSamples);
+            return loopStartSamples + samplesSinceStart % clipLengthSamples;
+        }
+    }
+
+    
+
+    /*
+     * --------- Faux-Loop Interface Related ----------------------------------
+     */
     get loopStart() { return this.#state.loopStart; }
     set loopStart(loopStart) {
         if(this.#state.loopStart == this.#state.startOffset) {
@@ -78,96 +185,16 @@ export class LoopPlayer {
         }
     }
 
-    // this is bad, um-k? this is strictly scaffolding and 
-    // needs to be replaced with the proper abstraction / access
-    get __loop() { return this.#loop; }
+    get state() { return {...this.#state}; }
 
-    play(startAt=0, detune=null) {
-        this.#player = new AudioBufferSourceNode(this.#audioContext, {
-            buffer: this.#loop.audioBuffer,
-            loop: this.#state.loop,
-            loopStart:  this.#state.loopStart,
-            loopEnd: this.#state.loopEnd,
-            playbackRate: this.#state.playbackRate
-        });
+    set preGain(preGain) { this.#state.preGain.gain.value = preGain; }
 
-        // this.#player.addEventListener('ended', function(event) {
-        //     // add ended handler here to do any cleanup when a loop ends
-        // });
-        
-        if(detune) {
-            this.#player.detune.value = detune;
-        } else {
-            this.#player.detune.value = this.#loop.detune;
-        }
-
-        let foo = this.#player;
-
-        this.state.preGain.gain.value = this.#loop.preGain;
-        foo = foo.connect(this.state.preGain);
-        
-
-        // if(this.#loop.envelope) {
-        //     foo = foo.connect(this.#loop.envelope);
-        // }
-
-        foo.connect(this.#downstreamChain);
-
-
-        this.#playStartSamples = Math.floor(this.#audioContext.currentTime * this.#loop.audioBuffer.sampleRate);              
-        this.#player.start(startAt, this.#state.startOffset); // use the offset here to start at the right time
-        if(this.#state.duration) {
-            this.#player.stop(this.#state.duration);
-        }
-    }
-
-    get detune() {
-        return this.#player.detune;
-    }
-
-    get state() {
-        return {...this.#state};
-    }
-
-    set preGain(preGain) {
-        this.#state.preGain.gain.value = preGain;
-    }
-
+    // adsr is an object with fields: attack, decay, sustain, release
     set adsr(adsr) {
-        const env = this.#state.envelope;
-        env.type = 'adsr';
-        for(let field of ['attack', 'decay', 'sustain', 'release']) {
-            const val = adsr[field];
-            if(val && typeof(val) == 'number') {
-                env[field] = val;
-            }
-        }
+        this.#state.envelope = {
+            type: 'adsr',
+            ...adsr
+        };
     }
-
-    isPlaying() { return Boolean(this.#player); }
-    
-    stop(stopAt=0) {
-        if(this.#player) {
-            // todo: if there is an envelope attached activate the release
-            // and then schedule to stop at end of release
-            this.#player.stop(stopAt);
-            this.#player.disconnect();//this.#downstreamChain);
-            this.#player = null;
-        }
-    }
-
-    // todo: this is not accurate if a startOffset other than loopStart is used.
-    // it should be pretty simple to add or subtract the difference off of the beginning
-    currentSampleIndex() {
-        if(this.#player) {
-            const sampleRate = this.#loop.audioBuffer.sampleRate;
-            const nowSamples = Math.floor(this.#audioContext.currentTime * sampleRate);
-            const samplesSinceStart = nowSamples - this.#playStartSamples;
-            const loopStartSamples = this.#player.loopStart * sampleRate;
-            const clipLengthSamples = Math.floor((this.#player.loopEnd * sampleRate) - loopStartSamples);
-            return loopStartSamples + samplesSinceStart % clipLengthSamples;
-        }
-    }
-
 
 }

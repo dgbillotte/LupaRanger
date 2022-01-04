@@ -38,6 +38,16 @@ class Module {
 
 }
 
+class CutterExpander {
+    draw() {
+
+    }
+
+    loadLoop() {
+        
+    }
+}
+
 class Rack {
     #modules = [];
     #activeModule = null;
