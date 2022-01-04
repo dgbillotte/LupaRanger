@@ -181,8 +181,11 @@ export class LoopShopUI {
         this.#htmlRoot.querySelector('button.adsr').addEventListener('click', function() {
             if(this.#envelope) {
                 this.#envelope = null;
+                this.#loopPlayer.adsr = null;
             } else {
-                this.#envelope = new ADSRWidget(this.#canvasCtx, this.draw.bind(this));
+                // this.#envelope = new ADSRWidget(this.#canvasCtx, this.draw.bind(this));
+                this.#envelope = new ADSRWidget(this.#canvasCtx, this.#onEnvelopeChange.bind(this));
+                this.#onEnvelopeChange();
             }
             this.draw();
         }.bind(this));
@@ -190,7 +193,7 @@ export class LoopShopUI {
     }
 
     #onEnvelopeChange(event) {
-        this.#loopPlayer.adsr = this.adsrParams();
+        this.#loopPlayer.adsr = this.adsrParams;
         this.draw();
     }
 

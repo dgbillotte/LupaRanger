@@ -25,6 +25,7 @@ export class LoopPlayer {
     #playStartSamples // for instrumentation if we want...
     #state = {};
     #envelopeNode
+    #startRelease
 
     constructor(audioContext, loop, downstreamChain, state={}) {
         this.#audioContext = audioContext;
@@ -41,7 +42,6 @@ export class LoopPlayer {
             envelope: loop.envelope,
             // detune: ??? maybe
         }, ...state};
-
     }
 
 
@@ -49,6 +49,9 @@ export class LoopPlayer {
      * --------- Playing Related ----------------------------------------------
      */
     play(startAt=0, detune=null) {
+        if(startAt == 0) {
+            startAt = this.#audioContext.currentTime;
+        }
         this.#player = new AudioBufferSourceNode(this.#audioContext, {
             buffer: this.#loop.audioBuffer,
             loop: true, // loopStart/End don't work without this, so need to stop after one play below
@@ -78,23 +81,31 @@ export class LoopPlayer {
 
         const clipDuration = this.loopEnd - this.loopStart;
         let startEnvelope = () => null;
+        this.#startRelease = () => null;
         if(this.#state.envelope && this.#state.envelope.type == 'adsr') {
             if(! this.#envelopeNode) {
                 this.#envelopeNode = this.#audioContext.createGain();
             }
             
+            const sustain = this.#state.envelope.sustain
             startEnvelope = function(startAt) {
                 const attackEnd = startAt + this.#state.envelope.attack;
                 const decayEnd = attackEnd + this.#state.envelope.decay;
-                const sustain = this.#state.envelope.sustain
                 const releaseEnd = startAt + clipDuration;
                 const releaseStart = releaseEnd - this.#state.envelope.release;
+                console.log('release end: ', releaseEnd);
                 this.#envelopeNode.gain
                     .setValueAtTime(0, startAt)
                     .linearRampToValueAtTime(1, attackEnd)
-                    .linearRampToValueAtTime(sustain, decayEnd)
+                    .exponentialRampToValueAtTime(sustain, decayEnd)
+            }.bind(this);
+                
+            this.#startRelease = function(startAt) {
+                const releaseEnd = startAt + clipDuration;
+                const releaseStart = releaseEnd - this.#state.envelope.release;
+                this.#envelopeNode.gain
                     .setValueAtTime(sustain, releaseStart)
-                    .linearRampToValueAtTime(0, releaseEnd);
+                    .linearRampToValueAtTime(0.01, releaseEnd);
             }.bind(this);
 
             nodeChain = nodeChain.connect(this.#envelopeNode);
@@ -105,13 +116,21 @@ export class LoopPlayer {
         this.#playStartSamples = Math.floor(this.#audioContext.currentTime * this.#loop.audioBuffer.sampleRate);              
         this.#player.start(startAt, this.#state.startOffset); // use the offset here to start at the right time
         startEnvelope(startAt);
-        if(! this.#state.loop) {
-            const start = startAt > 0 ? startAt : this.#audioContext.currentTime;
-            this.#player.stop(start + clipDuration);
-            console.log('stopping in ', start + clipDuration, ' seconds');
-        } else if(this.#state.duration) {
-            this.#player.stop(this.#state.duration);
+
+        if(this.#state.loop) {
+            if(this.#state.duration) {
+                this.#startRelease(this.#state.duration - this.#state.envelope.release);
+                this.#player.stop(this.#state.duration);
+
+            } else {
+                // do nothing, wait for stop to get called
+            }
+        } else {
+            this.#startRelease(startAt);
+            this.#player.stop(startAt + clipDuration);
+            console.log('stopping at ', startAt + clipDuration, ' seconds');
         }
+
     }
     
     stop(stopAt=0) {
@@ -191,10 +210,14 @@ export class LoopPlayer {
 
     // adsr is an object with fields: attack, decay, sustain, release
     set adsr(adsr) {
-        this.#state.envelope = {
-            type: 'adsr',
-            ...adsr
-        };
+        if(adsr) {
+            this.#state.envelope = {
+                type: 'adsr',
+                ...adsr
+            };
+        } else {
+            this.#state.envelope = {type: 'none'};
+        }
     }
 
 }
